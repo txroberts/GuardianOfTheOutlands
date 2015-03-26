@@ -25,22 +25,22 @@ public class EnemySpawner : MonoBehaviour {
 				switch (randEdge){
 				case 0: // top edge
 					randX = Random.Range(0f, 1f); // random point on the x-axis
-					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(randX,1,0));
+					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(randX,1,10));
 					break;
 				case 1: // right edge
 					randY = Random.Range(0f, 1f); // random point on the y-axis
-					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(1,randY,0));
+					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(1,randY,10));
 					break;
 				case 2: // bottom edge
 					randX = Random.Range(0f, 1f); // random point on the x-axis
-					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(randX,0,0));
+					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(randX,0,10));
 					break;
 				case 3: // left edge
 					randY = Random.Range(0f, 1f); // random point on the y-axis
-					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(0,randY,0));
+					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(0,randY,10));
 					break;
 				default: // default bottom-left corner
-					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(0,0,0));
+					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(0,0,10));
 					break;
 				}
 
