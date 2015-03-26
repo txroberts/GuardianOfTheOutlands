@@ -5,11 +5,15 @@ public class DestroyArea : MonoBehaviour {
 	void OnTriggerExit2D (Collider2D c){
 		string layerName = LayerMask.LayerToName (c.gameObject.layer); // Get the layer name
 
-		if (!layerName.Equals ("Player")) {
+		if (layerName.Equals ("Bullet (Player)")) {
 			Destroy (c.gameObject);
-		} else {
+		} else if (layerName.Equals ("Barrel")) {
+			Enemy enemy = c.transform.parent.GetComponent<Enemy> ();
+			enemy.currentState = "No Target";
+			Destroy (c.gameObject);
+		} else if (layerName.Equals ("Player")) {
 			Transform player = c.transform;
-			Vector3 playerPosition = Camera.main.WorldToViewportPoint(player.position);
+			Vector3 playerPosition = Camera.main.WorldToViewportPoint (player.position);
 			Vector3 newPosition = player.position;
 
 			if (playerPosition.x > 1 || playerPosition.x < 0)
@@ -19,7 +23,8 @@ public class DestroyArea : MonoBehaviour {
 				newPosition.y = -newPosition.y;
 
 			player.position = newPosition;
+		} else {
+			Destroy (c.gameObject);
 		}
-
 	}
 }
