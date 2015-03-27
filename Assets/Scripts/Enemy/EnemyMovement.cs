@@ -8,13 +8,12 @@ public class EnemyMovement : MonoBehaviour {
 	GameObject targetBarrel;
 	Barrel targetBarrelScript;
 
-	public Vector3 exitPoint, roamTarget;
+	Vector3 exitPoint, roamTarget;
 
 	void Start () {
 		vehicle = GetComponent<Vehicle> ();
 		enemy = GetComponent<Enemy> ();
 
-		//getNewExitPoint ();
 		getNewRoamTarget ();
 	}
 
@@ -41,6 +40,7 @@ public class EnemyMovement : MonoBehaviour {
 	}
 
 	void Roam () {
+		// if the enemy is not close to the waypoint
 		if (Vector3.Distance(transform.position, roamTarget) > 0.1f) {
 			Vector3 direction = (roamTarget - transform.position).normalized;
 			float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
@@ -52,12 +52,13 @@ public class EnemyMovement : MonoBehaviour {
 	}
 	
 	void MoveToBarrel (){
+		// move if the target barrel hasn't been picked up by another enemy
 		if (!targetBarrelScript.getPickedUp ()) {
 			Vector3 direction = (targetBarrel.transform.position - transform.position).normalized;
 			float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
 			transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
 			transform.position += direction * vehicle.movementSpeed * Time.deltaTime;
-		} else {
+		} else { // target barrel has been picked up by another enemy, switch to roaming mode
 			getNewRoamTarget ();
 			enemy.currentState = "No Target";
 		}
@@ -83,11 +84,15 @@ public class EnemyMovement : MonoBehaviour {
 	}
 
 	void Escape () {
-		Vector3 direction = (exitPoint - transform.position).normalized;
-		float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
-		transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
-		
-		transform.position += direction * vehicle.movementSpeed/2 * Time.deltaTime;
+		// if the enemy is not close to its exit point
+		if (Vector3.Distance (transform.position, exitPoint) > 0.1f) {
+			Vector3 direction = (exitPoint - transform.position).normalized;
+			float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
+			transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
+			transform.position += direction * vehicle.movementSpeed / 2 * Time.deltaTime;
+		} else { // the enemy has reached its exit point, switch to roaming mode
+			enemy.currentState = "No Target";
+		}
 	}
 
 	void getNewExitPoint(){
@@ -124,26 +129,27 @@ public class EnemyMovement : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D c){
 		string layerName = LayerMask.LayerToName (c.gameObject.layer); // get the layer name
 
+		// hit by the player's bullet
 		if (layerName.Equals ("Bullet (Player)")) {
-			Transform barrel = transform.FindChild ("Barrel(Clone)");
-		
-			// if the enemy was targeting a barrel, free the barrel for other enemies to target
+			// if the shot enemy was targeting a barrel, free the barrel for other enemies to target
 			if (targetBarrel != null) {
 				Barrel barrelScript = targetBarrel.GetComponent<Barrel> ();
 				barrelScript.setTargeted (false);
 			}
 		
-			// If the enemy was carrying a barrel, drop it
+			// If the shot enemy was carrying a barrel, drop it
+			Transform barrel = transform.FindChild ("Barrel(Clone)");
 			if (barrel != null) {
 				// Make the barrel targetable by other enemies
 				Barrel barrelScript = barrel.GetComponent<Barrel> ();
 				barrelScript.setTargeted (false);
 				barrelScript.setPickedUp (false);
 			
+				// give back to the Barrel Spawner object
 				barrel.parent = GameObject.Find ("BarrelSpawner").transform;
 			}
 		
-			// Delete the bullet
+			// Delete the player's bullet
 			Destroy (c.gameObject);
 		
 			// Explode the enemy
@@ -152,13 +158,13 @@ public class EnemyMovement : MonoBehaviour {
 			// Delete the enemy object
 			Destroy (gameObject);
 
-		} else if (layerName.Equals ("Barrel")){
+		} else if (layerName.Equals ("Barrel")){ // collided with a barrel
 			Barrel barrelScript = c.GetComponent<Barrel> ();
 
-			// Only pick up a barrel if not already carrying one (none of the enemy's children are barrels)
+			// Only pick up a barrel if not already carrying one and the barrel isn't being carried by another enemy
 			if (transform.FindChild ("Barrel(Clone)") == null && !barrelScript.getPickedUp()) {
-				// If this wasn't the enemy's intended barrel, free the intended barrel for other enemies
-				if (!targetBarrel.Equals (gameObject)) {
+				// If the barrel wasn't the enemy's intended barrel, free the intended barrel for other enemies
+				if (targetBarrel != null && !targetBarrel.Equals (gameObject)) {
 					Barrel targetBarrelScript = targetBarrel.GetComponent<Barrel> ();
 					targetBarrelScript.setTargeted (false);
 				}
@@ -168,6 +174,7 @@ public class EnemyMovement : MonoBehaviour {
 				barrelScript.setTargeted(false);
 				barrelScript.setPickedUp(true);
 
+				// get a place to escape to, switch to escape mode
 				getNewExitPoint ();
 				enemy.setCurrentState ("Escape");
 			}
