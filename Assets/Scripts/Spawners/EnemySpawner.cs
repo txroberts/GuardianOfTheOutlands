@@ -5,7 +5,7 @@ public class EnemySpawner : MonoBehaviour {
 
 	// Array of types of enemy
 	public GameObject[] enemyTypes;
-	public int numEnemies = 0;
+	public int numEnemies = 1;
 
 	IEnumerator Start()
 	{
@@ -43,8 +43,6 @@ public class EnemySpawner : MonoBehaviour {
 					spawnVector = Camera.main.ViewportToWorldPoint(new Vector3(0,0,10));
 					break;
 				}
-
-
 
 				// Spawn a random type of enemy
 				int randType = Random.Range(0, enemyTypes.Length);
