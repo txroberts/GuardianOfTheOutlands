@@ -150,7 +150,7 @@ public class EnemyMovement : MonoBehaviour {
 			}
 		
 			// Delete the player's bullet
-			Destroy (c.gameObject);
+			c.gameObject.SetActive(false);
 		
 			// Explode the enemy
 			vehicle.Explosion ();

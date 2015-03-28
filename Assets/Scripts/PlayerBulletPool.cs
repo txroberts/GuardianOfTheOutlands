@@ -16,4 +16,17 @@ public class PlayerBulletPool : MonoBehaviour {
 			bullets.Add(bullet);
 		}
 	}
+
+	public bool fireBullet (Transform player) {
+		for (int i = 0; i < bullets.Count; i++){
+			if (!bullets[i].activeSelf){
+				bullets[i].transform.position = player.position;
+				bullets[i].transform.rotation = player.rotation;
+				bullets[i].SetActive(true);
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

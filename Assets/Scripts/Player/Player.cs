@@ -5,6 +5,8 @@ public class Player : MonoBehaviour {
 	Vehicle vehicle;
 	Animator anim;
 
+	PlayerBulletPool bulletPool;
+
 	// Vehicle shooting timers
 	public float shootDelay = 0.5f;
 	private float nextShot;
@@ -14,6 +16,8 @@ public class Player : MonoBehaviour {
 	void Start () {
 		vehicle = GetComponent<Vehicle> ();
 		anim = GetComponent<Animator> ();
+
+		bulletPool = GameObject.Find ("PlayerBulletPool").GetComponent<PlayerBulletPool> ();
 	}
 
 	void FixedUpdate(){
@@ -27,9 +31,10 @@ public class Player : MonoBehaviour {
 	// Shoot a bullet
 	public void Shoot (){
 		if (Time.time >= nextShot) {
-			Instantiate (bullet, transform.position, transform.rotation);
-			nextShot = Time.time + shootDelay; // the next time when a bullet can be fired
-			anim.SetBool ("IsShooting", true); // trigger the shooting animation
+			if (bulletPool.fireBullet(transform)) { // if bullet was fired
+				nextShot = Time.time + shootDelay; // the next time when a bullet can be fired
+				anim.SetBool ("IsShooting", true); // trigger the shooting animation
+			}
 		}
 	}
 
