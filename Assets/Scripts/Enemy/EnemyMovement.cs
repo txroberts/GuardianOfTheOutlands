@@ -151,6 +151,9 @@ public class EnemyMovement : MonoBehaviour {
 		
 			// Delete the player's bullet
 			c.gameObject.SetActive(false);
+
+			// Add points to the player's score
+			FindObjectOfType<Score>().addPoints(enemy.pointsValue);
 		
 			// Explode the enemy
 			vehicle.Explosion ();
