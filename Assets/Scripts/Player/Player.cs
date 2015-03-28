@@ -10,6 +10,7 @@ public class Player : MonoBehaviour {
 	// Vehicle shooting timers
 	public float shootDelay = 0.5f;
 	private float nextShot;
+	public int deathPenaltyPoints = 500;
 
 	public GameObject bullet;
 
@@ -45,6 +46,9 @@ public class Player : MonoBehaviour {
 		// ignore if it wasn't an enemy that collided
 		if (!layerName.Equals ("Enemy"))
 			return;
+
+		// Deduct points from the player's score
+		FindObjectOfType<Score>().subtractPoints(deathPenaltyPoints);
 
 		// Trigger an explosion
 		vehicle.Explosion ();
