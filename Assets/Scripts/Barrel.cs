@@ -3,6 +3,7 @@
 public class Barrel : MonoBehaviour {
 
 	public bool targeted = false, pickedUp = false;
+	public int pointsValue = 1000;
 
 	public void setTargeted (bool newValue){
 		targeted = newValue;
