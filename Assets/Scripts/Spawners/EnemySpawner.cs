@@ -60,8 +60,10 @@ public class EnemySpawner : MonoBehaviour {
 
 			// After a wave has ended, add points to the player's score for each remaining barrel
 			int numberOfBarrels = GameObject.Find ("BarrelSpawner").transform.childCount;
-			int barrelPointsValue = GameObject.FindGameObjectWithTag("Barrel").GetComponent<Barrel>().pointsValue;
-			FindObjectOfType<Score>().addPoints(numberOfBarrels * barrelPointsValue);
+			if (numberOfBarrels > 0){
+				int barrelPointsValue = GameObject.FindGameObjectWithTag("Barrel").GetComponent<Barrel>().pointsValue;
+				FindObjectOfType<Score>().addPoints(numberOfBarrels * barrelPointsValue);
+			}
 		}
 	}
 }

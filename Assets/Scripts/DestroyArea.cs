@@ -27,6 +27,9 @@ public class DestroyArea : MonoBehaviour {
 			player.position = newPosition;
 		} else if (layerName.Equals ("Barrel")){
 			damageImageAnimator.SetTrigger("BarrelStolen");
+			if (c.gameObject.transform.parent != null){ // parent hasn't been destroyed
+				c.gameObject.transform.parent.GetComponent<Enemy>().currentState = "No Target";
+			}
 			Destroy (c.gameObject);
 		}
 	}

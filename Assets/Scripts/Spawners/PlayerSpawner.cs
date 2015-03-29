@@ -8,8 +8,6 @@ public class PlayerSpawner : MonoBehaviour {
 	IEnumerator Start () {
 
 		while (true) {
-			float randX = Random.Range (0f, 1f); // random point on the x-axis
-			float randY = Random.Range (0f, 1f); // random point on the y-axis
 			Vector3 spawnPosition = Camera.main.ViewportToWorldPoint (new Vector3 (randX, randY, 10));
 
 			// Spawn a player at a random position, with a random rotation

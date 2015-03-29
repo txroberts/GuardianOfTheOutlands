@@ -34,8 +34,8 @@ public class EnemyMovement : MonoBehaviour {
 	}
 
 	void getNewRoamTarget(){
-		float randX = Random.Range (0f, 1f); // random point on the x-axis
-		float randY = Random.Range (0f, 1f); // random point on the y-axis
+		float randX = Random.Range (0f, 0.9f); // random point on the x-axis
+		float randY = Random.Range (0f, 0.9f); // random point on the y-axis
 		roamTarget = Camera.main.ViewportToWorldPoint (new Vector3 (randX, randY, 10));
 	}
 
