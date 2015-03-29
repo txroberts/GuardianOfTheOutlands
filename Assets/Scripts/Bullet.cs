@@ -2,7 +2,7 @@
 
 public class Bullet : MonoBehaviour {
 
-	public int speed = 5;
+	public int speed = 4;
 
 	void OnEnable () {
 		// Move the bullet forwards at its speed when it's fired (becomes enabled in the pool)

@@ -63,6 +63,8 @@ public class EnemySpawner : MonoBehaviour {
 			if (numberOfBarrels > 0){
 				int barrelPointsValue = GameObject.FindGameObjectWithTag("Barrel").GetComponent<Barrel>().pointsValue;
 				FindObjectOfType<Score>().addPoints(numberOfBarrels * barrelPointsValue);
+			} else {
+				break;
 			}
 		}
 	}

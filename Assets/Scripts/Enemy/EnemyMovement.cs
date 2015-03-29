@@ -8,11 +8,15 @@ public class EnemyMovement : MonoBehaviour {
 	GameObject targetBarrel;
 	Barrel targetBarrelScript;
 
+	Animator damageImageAnimator;
+
 	Vector3 exitPoint, roamTarget;
 
 	void Start () {
 		vehicle = GetComponent<Vehicle> ();
 		enemy = GetComponent<Enemy> ();
+
+		damageImageAnimator = GameObject.Find ("DamageImage").GetComponent<Animator> ();
 
 		getNewRoamTarget ();
 	}
@@ -91,7 +95,11 @@ public class EnemyMovement : MonoBehaviour {
 			transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
 			transform.position += direction * vehicle.movementSpeed / 2 * Time.deltaTime;
 		} else { // the enemy has reached its exit point, switch to roaming mode
-			enemy.currentState = "No Target";
+			if (transform.FindChild("Barrel(Clone)") != null){
+				Destroy (transform.FindChild("Barrel(Clone)").gameObject);
+				damageImageAnimator.SetTrigger("BarrelStolen");
+				enemy.currentState = "No Target";
+			}
 		}
 	}
 
@@ -106,22 +114,22 @@ public class EnemyMovement : MonoBehaviour {
 		switch (randEdge){
 		case 0: // top edge
 			randX = Random.Range(0f, 1f); // random point on the x-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(randX,1.1f,10));
+			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(randX,1.01f,10));
 			break;
 		case 1: // right edge
 			randY = Random.Range(0f, 1f); // random point on the y-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(1.1f,randY,10));
+			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(1.01f,randY,10));
 			break;
 		case 2: // bottom edge
 			randX = Random.Range(0f, 1f); // random point on the x-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(randX,-0.1f,10));
+			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(randX,-0.01f,10));
 			break;
 		case 3: // left edge
 			randY = Random.Range(0f, 1f); // random point on the y-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(-0.1f,randY,10));
+			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(-0.01f,randY,10));
 			break;
 		default: // default bottom-left corner
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(-0.1f,-0.1f,10));
+			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(-0.01f,-0.01f,10));
 			break;
 		}
 	}
