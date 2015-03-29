@@ -6,6 +6,6 @@ public class Bullet : MonoBehaviour {
 
 	void OnEnable () {
 		// Move the bullet forwards at its speed when it's fired (becomes enabled in the pool)
-		rigidbody2D.velocity = transform.up.normalized * speed;
+		GetComponent<Rigidbody2D>().velocity = transform.up.normalized * speed;
 	}
 }
