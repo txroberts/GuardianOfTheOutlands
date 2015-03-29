@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 
 public class DestroyArea : MonoBehaviour {
+	Animator damageImageAnimator;
+
+	void Start () {
+		damageImageAnimator = GameObject.Find ("DamageImage").GetComponent<Animator> ();
+	}
 
 	void OnTriggerExit2D (Collider2D c){
 		string layerName = LayerMask.LayerToName (c.gameObject.layer); // Get the layer name
@@ -20,8 +25,8 @@ public class DestroyArea : MonoBehaviour {
 				newPosition.y = -newPosition.y;
 		
 			player.position = newPosition;
-		} else {
-			// Destroy anything else
+		} else if (layerName.Equals ("Barrel")){
+			damageImageAnimator.SetTrigger("BarrelStolen");
 			Destroy (c.gameObject);
 		}
 	}

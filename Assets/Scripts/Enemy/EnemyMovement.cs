@@ -106,22 +106,22 @@ public class EnemyMovement : MonoBehaviour {
 		switch (randEdge){
 		case 0: // top edge
 			randX = Random.Range(0f, 1f); // random point on the x-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(randX,1,10));
+			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(randX,1.1f,10));
 			break;
 		case 1: // right edge
 			randY = Random.Range(0f, 1f); // random point on the y-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(1,randY,10));
+			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(1.1f,randY,10));
 			break;
 		case 2: // bottom edge
 			randX = Random.Range(0f, 1f); // random point on the x-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(randX,0,10));
+			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(randX,-0.1f,10));
 			break;
 		case 3: // left edge
 			randY = Random.Range(0f, 1f); // random point on the y-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(0,randY,10));
+			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(-0.1f,randY,10));
 			break;
 		default: // default bottom-left corner
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(0,0,10));
+			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(-0.1f,-0.1f,10));
 			break;
 		}
 	}
