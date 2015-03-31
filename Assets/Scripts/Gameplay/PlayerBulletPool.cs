@@ -11,8 +11,8 @@ public class PlayerBulletPool : MonoBehaviour {
 		bullets = new List<GameObject> ();
 		for (int i = 0; i < bulletPoolSize; i++) {
 			GameObject bullet = (GameObject) Instantiate(bulletPrefab);
-			bullet.SetActive(false);
 			bullet.transform.parent = transform;
+			bullet.SetActive(false);
 			bullets.Add(bullet);
 		}
 	}
