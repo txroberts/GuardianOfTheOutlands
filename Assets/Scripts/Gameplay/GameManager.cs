@@ -3,14 +3,19 @@
 public class GameManager : MonoBehaviour {
 
 	VehicleFactory vehicleFactory;
+	BarrelFactory barrelFactory;
 
 	public int numberOfEnemies = 5;
+	public int numberOfBarrels = 5;
+	public float barrelSpawnRadius = 0.8f;
 
 	public GameObject enemies, barrels, players;
 
 	void Start () {
 		vehicleFactory = GetComponent<VehicleFactory> ();
+		barrelFactory = GetComponent<BarrelFactory> ();
 
+		spawnBarrels ();
 		spawnPlayer();
 		spawnWave(); // spawn first wave of enemies
 	}
@@ -35,6 +40,17 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	void spawnBarrels () {
+		Vector3 center = Vector3.zero;
+		
+		for (int i = 0; i < numberOfBarrels; i++) {
+			GameObject barrel = barrelFactory.createBarrel();
+			barrel.transform.position = randomPositionWithinCircle(center, barrelSpawnRadius);
+			barrel.transform.rotation = Quaternion.identity;
+			barrel.transform.parent = barrels.transform;
+		}
+	}
+
 	void spawnPlayer ()	{
 		GameObject player = vehicleFactory.createVehicle("player"); // vehicle factory creates a player
 
@@ -47,12 +63,6 @@ public class GameManager : MonoBehaviour {
 		//Instantiate (player, testSpawn, Quaternion.identity);
 	}
 	
-	Vector3 randomScreenPosition ()	{
-		float randX = Random.Range (0f, 0.9f); // random point on the x-axis
-		float randY = Random.Range (0f, 0.9f); // random point on the y-axis
-		return Camera.main.ViewportToWorldPoint (new Vector3 (randX, randY, 10));
-	}
-
 	void spawnWave () {
 		for (int i = 0; i < numberOfEnemies; i++) {
 			GameObject enemy = vehicleFactory.createVehicle("enemy");
@@ -60,6 +70,21 @@ public class GameManager : MonoBehaviour {
 			enemy.transform.rotation = Quaternion.identity;
 			enemy.transform.parent = enemies.transform;
 		}
+	}
+
+	Vector3 randomScreenPosition ()	{
+		float randX = Random.Range (0f, 0.9f); // random point on the x-axis
+		float randY = Random.Range (0f, 0.9f); // random point on the y-axis
+		return Camera.main.ViewportToWorldPoint (new Vector3 (randX, randY, 10));
+	}
+
+	Vector3 randomPositionWithinCircle (Vector3 center, float radius) {
+		float angle = Random.value * 360;
+		Vector3 position;
+		position.x = center.x + radius * Mathf.Sin (angle * Mathf.Deg2Rad);
+		position.y = center.y + radius * Mathf.Cos (angle * Mathf.Deg2Rad);
+		position.z = center.z;
+		return position;
 	}
 	
 	Vector3 randomScreenEdgePosition () {

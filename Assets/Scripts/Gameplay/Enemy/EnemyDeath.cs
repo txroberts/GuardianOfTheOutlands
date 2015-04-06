@@ -25,8 +25,8 @@ public class EnemyDeath : MonoBehaviour {
 				barrelScript.setTargeted (false);
 				barrelScript.setPickedUp (false);
 				
-				// give back to the Barrel Spawner object
-				barrel.parent = GameObject.Find ("BarrelSpawner").transform;
+				// give back to the Barrels object
+				barrel.parent = GameObject.Find ("Barrels").transform;
 			}
 			
 			// Delete the player's bullet
