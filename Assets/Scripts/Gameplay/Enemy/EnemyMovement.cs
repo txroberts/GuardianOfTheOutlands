@@ -3,7 +3,8 @@
 public class EnemyMovement : MonoBehaviour {
 
 	Vehicle vehicle;
-	Enemy enemy;
+
+	public string currentState = "No Target";
 
 	GameObject targetBarrel;
 	Barrel targetBarrelScript;
@@ -14,23 +15,22 @@ public class EnemyMovement : MonoBehaviour {
 
 	void Start () {
 		vehicle = GetComponent<Vehicle> ();
-		enemy = GetComponent<Enemy> ();
 
 		damageImageAnimator = GameObject.Find ("DamageImage").GetComponent<Animator> ();
 
 		getNewRoamTarget ();
 	}
 
-	void FixedUpdate () {
-		if (enemy.currentState.Equals ("Move")) {
+	void Update () {
+		if (currentState.Equals ("Move")) {
 			MoveToBarrel ();
-		} else if (enemy.currentState.Equals ("Escape")) {
+		} else if (currentState.Equals ("Escape")) {
 			Escape ();
-		} else if (enemy.currentState.Equals ("No Target")){
+		} else if (currentState.Equals ("No Target")){
 			targetNewBarrel ();
 			
 			if (targetBarrel != null) {
-				enemy.currentState = "Move";
+				currentState = "Move";
 			} else {
 				Roam ();
 			}
@@ -64,7 +64,7 @@ public class EnemyMovement : MonoBehaviour {
 			transform.position += direction * vehicle.movementSpeed * Time.deltaTime;
 		} else { // target barrel has been picked up by another enemy, switch to roaming mode
 			getNewRoamTarget ();
-			enemy.currentState = "No Target";
+			currentState = "No Target";
 		}
 	}
 
@@ -98,7 +98,7 @@ public class EnemyMovement : MonoBehaviour {
 			if (transform.FindChild("Barrel(Clone)") != null){
 				Destroy (transform.FindChild("Barrel(Clone)").gameObject);
 				damageImageAnimator.SetTrigger("BarrelStolen");
-				enemy.currentState = "No Target";
+				currentState = "No Target";
 			}
 		}
 	}
@@ -137,39 +137,7 @@ public class EnemyMovement : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D c){
 		string layerName = LayerMask.LayerToName (c.gameObject.layer); // get the layer name
 
-		// hit by the player's bullet
-		if (layerName.Equals ("Bullet (Player)")) {
-			// if the shot enemy was targeting a barrel, free the barrel for other enemies to target
-			if (targetBarrel != null) {
-				Barrel barrelScript = targetBarrel.GetComponent<Barrel> ();
-				barrelScript.setTargeted (false);
-			}
-		
-			// If the shot enemy was carrying a barrel, drop it
-			Transform barrel = transform.FindChild ("Barrel(Clone)");
-			if (barrel != null) {
-				// Make the barrel targetable by other enemies
-				Barrel barrelScript = barrel.GetComponent<Barrel> ();
-				barrelScript.setTargeted (false);
-				barrelScript.setPickedUp (false);
-			
-				// give back to the Barrel Spawner object
-				barrel.parent = GameObject.Find ("BarrelSpawner").transform;
-			}
-		
-			// Delete the player's bullet
-			c.gameObject.SetActive(false);
-
-			// Add points to the player's score
-			FindObjectOfType<Score>().addPoints(enemy.pointsValue);
-		
-			// Explode the enemy
-			vehicle.Explosion ();
-		
-			// Delete the enemy object
-			Destroy (gameObject);
-
-		} else if (layerName.Equals ("Barrel")){ // collided with a barrel
+		if (layerName.Equals ("Barrel")){ // collided with a barrel
 			Barrel barrelScript = c.GetComponent<Barrel> ();
 
 			// Only pick up a barrel if not already carrying one and the barrel isn't being carried by another enemy
@@ -187,12 +155,12 @@ public class EnemyMovement : MonoBehaviour {
 
 				// get a place to escape to, switch to escape mode
 				getNewExitPoint ();
-				enemy.setCurrentState ("Escape");
+				currentState = "Escape";
 			}
 		}
 	}
 
-	public GameObject getTargetBarrel(){
+	public GameObject getTargetBarrel() {
 		return targetBarrel;
 	}
 }
