@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class MenuManager : MonoBehaviour {
 
@@ -19,6 +20,11 @@ public class MenuManager : MonoBehaviour {
 	}
 
 	public void switchToScene (string newScene) {
+		StartCoroutine(loadScene(newScene));
+	}
+
+	IEnumerator loadScene (string newScene) {
+		yield return new WaitForSeconds (3f);
 		Application.LoadLevel (newScene);
 	}
 }
