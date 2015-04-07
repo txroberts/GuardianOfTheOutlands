@@ -8,7 +8,7 @@ public class WaveCounter : MonoBehaviour {
 
 	void Start () {
 		counterGUI = GetComponent<Text> ();
-		waveCounter = 0;
+		waveCounter = 1;
 	}
 
 	void Update () {
