@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour {
 				int barrelPointsValue = barrels.GetComponentInChildren<Barrel>().pointsValue;
 				FindObjectOfType<Score>().addPoints(remainingBarrels * barrelPointsValue);
 
+				FindObjectOfType<WaveCounter>().incrementWaveCounter();
 				spawnWave(); // spawn the next wave of enemies
 			} else {
 				// end game screen
