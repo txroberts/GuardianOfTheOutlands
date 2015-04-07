@@ -15,7 +15,7 @@ public class Score : MonoBehaviour {
 		anim = GetComponent<Animator> ();
 	}
 
-	void FixedUpdate () {
+	void Update () {
 		scoreGUI.text = score.ToString ();
 	}
 

@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour {
 		vehicle = GetComponent<Vehicle> ();
 	}
 	
-	void FixedUpdate(){
+	void Update(){
 		// Get horizontal and vertical axes
 		float translation = Input.GetAxis ("Vertical");
 		float rotation = Input.GetAxis ("Horizontal");
