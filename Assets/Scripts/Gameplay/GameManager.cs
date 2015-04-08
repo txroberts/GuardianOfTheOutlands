@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour {
 				spawnWave(); // spawn the next wave of enemies
 			} else {
 				// end game screen
+				FindObjectOfType<Timer>().enabled = false;
 			}
 		}
 
