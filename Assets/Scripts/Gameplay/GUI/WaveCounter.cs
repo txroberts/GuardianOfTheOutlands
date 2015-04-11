@@ -3,8 +3,9 @@ using UnityEngine.UI;
 
 public class WaveCounter : MonoBehaviour {
 
-	Text counterGUI;
 	int waveCounter;
+	Text counterGUI;
+	public Text endGameCounter;
 
 	void Start () {
 		counterGUI = GetComponent<Text> ();
@@ -13,6 +14,7 @@ public class WaveCounter : MonoBehaviour {
 
 	void Update () {
 		counterGUI.text = waveCounter.ToString ();
+		endGameCounter.text = waveCounter.ToString ();
 	}
 
 	public void incrementWaveCounter () {

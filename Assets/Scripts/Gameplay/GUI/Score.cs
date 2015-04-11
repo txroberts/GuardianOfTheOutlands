@@ -3,8 +3,10 @@ using UnityEngine.UI;
 
 public class Score : MonoBehaviour {
 
-	Text scoreGUI;
 	int score;
+
+	Text scoreGUI;
+	public Text endGameScore;
 
 	Animator anim;
 
@@ -17,6 +19,7 @@ public class Score : MonoBehaviour {
 
 	void Update () {
 		scoreGUI.text = score.ToString ();
+		endGameScore.text = score.ToString ();
 	}
 
 	public void addPoints (int points) {

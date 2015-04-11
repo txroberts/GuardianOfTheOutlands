@@ -3,8 +3,9 @@ using UnityEngine.UI;
 
 public class Timer : MonoBehaviour {
 
-	Text timerGUI;
 	public bool running;
+	Text timerGUI;
+	public Text endGameTimer;
 
 	void Start () {
 		timerGUI = GetComponent<Text> ();
@@ -17,7 +18,9 @@ public class Timer : MonoBehaviour {
 			float mins = Mathf.Floor (time / 60);
 			float secs = Mathf.Floor (time % 60);
 			float millisecs = Mathf.Floor ((time * 100) % 100);
-			timerGUI.text = mins.ToString ("00") + ":" + secs.ToString ("00") + ":" + millisecs.ToString ("00");
+			string timeString = mins.ToString ("00") + ":" + secs.ToString ("00") + ":" + millisecs.ToString ("00");
+			timerGUI.text = timeString;
+			endGameTimer.text = timeString;
 		}
 	}
 }
