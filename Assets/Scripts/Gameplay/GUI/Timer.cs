@@ -4,15 +4,15 @@ using UnityEngine.UI;
 public class Timer : MonoBehaviour {
 
 	Text timerGUI;
-	public bool enabled;
+	public bool running;
 
 	void Start () {
 		timerGUI = GetComponent<Text> ();
-		enabled = true;
+		running = true;
 	}
 
 	void Update () {
-		if (enabled) {
+		if (running) {
 			float time = Time.timeSinceLevelLoad;
 			float mins = Mathf.Floor (time / 60);
 			float secs = Mathf.Floor (time % 60);

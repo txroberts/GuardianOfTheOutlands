@@ -6,8 +6,8 @@ public class MenuManager : MonoBehaviour {
 	public Menu currentMenu;
 
 	void Start () {
-		// switch to the default menu
-		switchToMenu (currentMenu);
+		if (currentMenu != null) // switch to the default menu
+			switchToMenu (currentMenu);
 	}
 
 	public void switchToMenu (Menu newMenu) {

@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour {
 
 	public GameObject enemies, barrels, players;
 
+	public Menu endGameMenu;
+
 	void Start () {
 		vehicleFactory = GetComponent<VehicleFactory> ();
 		barrelFactory = GetComponent<BarrelFactory> ();
@@ -32,7 +34,8 @@ public class GameManager : MonoBehaviour {
 				spawnWave(); // spawn the next wave of enemies
 			} else {
 				// end game screen
-				FindObjectOfType<Timer>().enabled = false;
+				FindObjectOfType<Timer>().running = false;
+				FindObjectOfType<MenuManager>().switchToMenu(endGameMenu);
 			}
 		}
 
