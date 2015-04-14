@@ -11,7 +11,6 @@ public class Score : MonoBehaviour {
 	float multiplierEndTime;
 
 	public Slider multiplierSlider;
-	public Image multiplierSliderBackground, multiplierSliderFill;
 	public Text multiplierGUI;
 
 	Text scoreGUI;
@@ -25,6 +24,7 @@ public class Score : MonoBehaviour {
 		playerDeaths = 0;
 
 		scoreMultiplier = 1;
+		multiplierSlider.gameObject.SetActive (false);
 		multiplierSlider.maxValue = multiplierEffectTime;
 
 		anim = GetComponent<Animator> ();
@@ -58,14 +58,9 @@ public class Score : MonoBehaviour {
 		anim.SetTrigger ("SubtractPoints");
 	}
 
-	public void activateScoreMultiplier (Color powerUpColor) {
+	public void activateScoreMultiplier () {
 		scoreMultiplier += 1;
-		multiplierGUI.color = powerUpColor;
 		multiplierGUI.text = "x " + scoreMultiplier.ToString ();
-
-		// make the timer slider the same colour as the power-up
-		multiplierSliderBackground.color = new Color(powerUpColor.r, powerUpColor.g, powerUpColor.b, 0.5f);
-		multiplierSliderFill.color = powerUpColor;
 
 		multiplierSlider.value = multiplierEffectTime; // reset the time slider back to the effect length
 		multiplierSlider.gameObject.SetActive (true);
