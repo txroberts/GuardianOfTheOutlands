@@ -3,6 +3,7 @@
 public class PickUp : MonoBehaviour {
 
 	public string pickUpType;
+	public int spawnProbability;
 
 	void Update () {
 		transform.Rotate (new Vector3 (0, 0, 90) * Time.deltaTime);
