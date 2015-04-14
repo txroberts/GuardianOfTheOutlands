@@ -9,38 +9,41 @@ public class EnemyDeath : MonoBehaviour {
 
 		// hit by the player's bullet
 		if (layerName.Equals ("Bullet (Player)")) {
-			GameObject targetBarrel = GetComponent<EnemyMovement>().getTargetBarrel();
+			destroyEnemy ();
 
-			// if the shot enemy was targeting a barrel, free the barrel for other enemies to target
-			if (targetBarrel != null) {
-				Barrel barrelScript = targetBarrel.GetComponent<Barrel> ();
-				barrelScript.setTargeted (false);
-			}
-			
-			// If the shot enemy was carrying a barrel, drop it
-			Transform barrel = transform.FindChild ("Barrel(Clone)");
-			if (barrel != null) {
-				// Make the barrel targetable by other enemies
-				Barrel barrelScript = barrel.GetComponent<Barrel> ();
-				barrelScript.setTargeted (false);
-				barrelScript.setPickedUp (false);
-				
-				// give back to the Barrels object
-				barrel.parent = GameObject.Find ("Barrels").transform;
-			}
-			
 			// Delete the player's bullet
 			c.gameObject.SetActive(false);
-			
-			// Add points to the player's score
-			FindObjectOfType<Score>().addPoints(pointsValue);
-			
-			// Explode the enemy
-			GetComponent<Vehicle>().Explosion ();
-			
-			// Delete the enemy object
-			Destroy (gameObject);
-			
 		}
+	}
+
+	public void destroyEnemy () {
+		GameObject targetBarrel = GetComponent<EnemyMovement>().getTargetBarrel();
+		
+		// if the shot enemy was targeting a barrel, free the barrel for other enemies to target
+		if (targetBarrel != null) {
+			Barrel barrelScript = targetBarrel.GetComponent<Barrel> ();
+			barrelScript.setTargeted (false);
+		}
+		
+		// If the shot enemy was carrying a barrel, drop it
+		Transform barrel = transform.FindChild ("Barrel(Clone)");
+		if (barrel != null) {
+			// Make the barrel targetable by other enemies
+			Barrel barrelScript = barrel.GetComponent<Barrel> ();
+			barrelScript.setTargeted (false);
+			barrelScript.setPickedUp (false);
+			
+			// give back to the Barrels object
+			barrel.parent = GameObject.Find ("Barrels").transform;
+		}
+
+		// Add points to the player's score
+		FindObjectOfType<Score>().addPoints(pointsValue);
+		
+		// Explode the enemy
+		GetComponent<Vehicle>().Explosion ();
+		
+		// Delete the enemy object
+		Destroy (gameObject);
 	}
 }

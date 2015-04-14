@@ -16,9 +16,12 @@ public class PickUp : MonoBehaviour {
 			return;
 
 		if (pickUpType.Equals ("Score Multiplier")) {
-			FindObjectOfType<Score>().activateScoreMultiplier (GetComponent<SpriteRenderer>().color);
+			FindObjectOfType<Score> ().activateScoreMultiplier ();
+		} else if (pickUpType.Equals ("Invincibility")) {
+			FindObjectOfType<PlayerDeath>().makeInvincible();
 		}
 
+		// destroy the pick-up
 		Destroy (gameObject);
 	}
 }
