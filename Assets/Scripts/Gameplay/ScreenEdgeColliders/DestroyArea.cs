@@ -7,5 +7,7 @@ public class DestroyArea : MonoBehaviour {
 
 		if (layerName.Equals ("Bullet (Player)"))
 			c.gameObject.SetActive (false);
+		else
+			Destroy (c.gameObject);
 	}
 }
