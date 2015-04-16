@@ -2,19 +2,27 @@
 
 public class PickUpFactory : MonoBehaviour {
 
-	public GameObject[] powerUpTypes;
+	public GameObject[] powerUpTypes, hazardTypes;
 
-	int powerUpsTotalWeight = 0;
+	int powerUpsTotalWeight, hazardsTotalWeight;
 
 	void Start () {
+		powerUpsTotalWeight = 0;
 		for (int i = 0; i < powerUpTypes.Length; i++) {
 			powerUpsTotalWeight += powerUpTypes[i].GetComponent<PickUp>().spawnProbability;
+		}
+
+		hazardsTotalWeight = 0;
+		for (int i = 0; i < hazardTypes.Length; i++) {
+			hazardsTotalWeight += hazardTypes[i].GetComponent<PickUp>().spawnProbability;
 		}
 	}
 
 	public GameObject createPickUp (string type) {
 		if (type.Equals ("Power Up")) {
-			return weightedRandomType(powerUpTypes, powerUpsTotalWeight);
+			return weightedRandomType (powerUpTypes, powerUpsTotalWeight);
+		} else if (type.Equals ("Hazard")) {
+			return weightedRandomType (hazardTypes, hazardsTotalWeight);
 		}
 
 		return null; // no pick-up was created

@@ -2,10 +2,28 @@
 
 public class Barrel : MonoBehaviour {
 
-	public bool targeted = false, pickedUp = false;
+	bool targeted = false, pickedUp = false;
 	public int pointsValue = 1000;
 
-	public void setTargeted (bool newValue){
+	public bool Targeted {
+		get {
+			return targeted;
+		}
+		set {
+			targeted = value;
+		}
+	}
+
+	public bool PickedUp {
+		get {
+			return pickedUp;
+		}
+		set {
+			pickedUp = value;
+		}
+	}
+
+	/*public void setTargeted (bool newValue){
 		targeted = newValue;
 	}
 
@@ -19,5 +37,5 @@ public class Barrel : MonoBehaviour {
 
 	public bool getPickedUp(){
 		return pickedUp;
-	}
+	}*/
 }

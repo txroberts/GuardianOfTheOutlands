@@ -5,15 +5,14 @@ public class PlayerDeath : MonoBehaviour {
 
 	public int deathPenaltyPoints = 1000;
 
-	bool invincible = false;
-	public float invincibilityTime = 8f;
+	bool invincible;
 	float invincibilityEndTime;
 	Slider invincibilitySlider;
 
 	void Start () {
+		invincible = false;
 		invincibilitySlider = GameObject.Find ("InvincibilityTimer").GetComponent<Slider> ();
 		invincibilitySlider.gameObject.SetActive (false);
-		invincibilitySlider.maxValue = invincibilityTime;
 	}
 
 	void Update () {
@@ -28,6 +27,24 @@ public class PlayerDeath : MonoBehaviour {
 				invincible = false;
 				invincibilitySlider.gameObject.SetActive (false);
 			}
+		}
+	}
+
+	public void makeInvincible (float invincibilityTime) {
+		if (!invincible) {
+			invincible = true;
+			invincibilitySlider.gameObject.SetActive (true);
+
+			// reset the time slider back to the effect length
+			invincibilitySlider.maxValue = invincibilityTime;
+			invincibilitySlider.value = invincibilityTime;
+
+			invincibilityEndTime = Time.time + invincibilityTime;
+		} else {
+			// add extra time if already invincible
+			invincibilityEndTime += invincibilityTime;
+			invincibilitySlider.maxValue = invincibilitySlider.value + invincibilityTime;
+			invincibilitySlider.value += invincibilityTime;
 		}
 	}
 
@@ -56,11 +73,7 @@ public class PlayerDeath : MonoBehaviour {
 		}
 	}
 
-	public void makeInvincible () {
-		invincibilitySlider.value = invincibilityTime; // reset the time slider back to the effect length
-
-		invincible = true;
-		invincibilitySlider.gameObject.SetActive (true);
-		invincibilityEndTime = Time.time + invincibilityTime;
+	public bool isInvincible () {
+			return invincible;
 	}
 }

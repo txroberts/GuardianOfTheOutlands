@@ -22,7 +22,7 @@ public class EnemyDeath : MonoBehaviour {
 		// if the shot enemy was targeting a barrel, free the barrel for other enemies to target
 		if (targetBarrel != null) {
 			Barrel barrelScript = targetBarrel.GetComponent<Barrel> ();
-			barrelScript.setTargeted (false);
+			barrelScript.Targeted = false;
 		}
 		
 		// If the shot enemy was carrying a barrel, drop it
@@ -30,8 +30,8 @@ public class EnemyDeath : MonoBehaviour {
 		if (barrel != null) {
 			// Make the barrel targetable by other enemies
 			Barrel barrelScript = barrel.GetComponent<Barrel> ();
-			barrelScript.setTargeted (false);
-			barrelScript.setPickedUp (false);
+			barrelScript.Targeted = false;
+			barrelScript.PickedUp = false;
 			
 			// give back to the Barrels object
 			barrel.parent = GameObject.Find ("Barrels").transform;

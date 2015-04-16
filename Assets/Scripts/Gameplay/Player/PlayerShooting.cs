@@ -7,7 +7,7 @@ public class PlayerShooting : MonoBehaviour {
 
 	// Vehicle shooting timers
 	public float shootDelay = 0.3333f;
-	private float nextShot;
+	float nextShot;
 
 	void Start () {
 		anim = GetComponent<Animator> ();

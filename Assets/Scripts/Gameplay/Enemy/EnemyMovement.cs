@@ -4,7 +4,7 @@ public class EnemyMovement : MonoBehaviour {
 
 	Vehicle vehicle;
 
-	public string currentState = "No Target";
+	public string currentState;
 
 	GameObject targetBarrel;
 	Barrel targetBarrelScript;
@@ -15,6 +15,8 @@ public class EnemyMovement : MonoBehaviour {
 
 	void Start () {
 		vehicle = GetComponent<Vehicle> ();
+
+		currentState = "No Target";
 
 		damageImageAnimator = GameObject.Find ("DamageImage").GetComponent<Animator> ();
 
@@ -57,7 +59,7 @@ public class EnemyMovement : MonoBehaviour {
 	
 	void MoveToBarrel (){
 		// move if the target barrel hasn't been picked up by another enemy
-		if (!targetBarrelScript.getPickedUp ()) {
+		if (!targetBarrelScript.PickedUp) {
 			Vector3 direction = (targetBarrel.transform.position - transform.position).normalized;
 			float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
 			transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
@@ -75,11 +77,11 @@ public class EnemyMovement : MonoBehaviour {
 			Barrel barrelScript = barrel.GetComponent<Barrel>();
 			
 			// barrel is not already being targeted or been picked up
-			if (!barrelScript.getTargeted() && !barrelScript.getPickedUp()){
+			if (!barrelScript.Targeted && !barrelScript.PickedUp){
 				targetBarrel = barrel;
 				targetBarrelScript = targetBarrel.GetComponent<Barrel>();
 				
-				barrelScript.setTargeted(true);
+				barrelScript.Targeted = true;
 				return;
 			} else{
 				targetBarrel = null; // didn't find a targetable barrel
@@ -141,17 +143,17 @@ public class EnemyMovement : MonoBehaviour {
 			Barrel barrelScript = c.GetComponent<Barrel> ();
 
 			// Only pick up a barrel if not already carrying one and the barrel isn't being carried by another enemy
-			if (transform.FindChild ("Barrel(Clone)") == null && !barrelScript.getPickedUp()) {
+			if (transform.FindChild ("Barrel(Clone)") == null && !barrelScript.PickedUp) {
 				// If the barrel wasn't the enemy's intended barrel, free the intended barrel for other enemies
 				if (targetBarrel != null && !targetBarrel.Equals (gameObject)) {
 					Barrel targetBarrelScript = targetBarrel.GetComponent<Barrel> ();
-					targetBarrelScript.setTargeted (false);
+					targetBarrelScript.Targeted = false;
 				}
 				
 				// 'pick up the barrel' (make it a child of the enemy that collided with it)
 				c.transform.parent = transform;
-				barrelScript.setTargeted(false);
-				barrelScript.setPickedUp(true);
+				barrelScript.Targeted = false;
+				barrelScript.PickedUp = true;
 
 				// get a place to escape to, switch to escape mode
 				getNewExitPoint ();

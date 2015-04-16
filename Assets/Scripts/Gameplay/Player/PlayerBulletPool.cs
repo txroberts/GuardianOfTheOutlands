@@ -9,6 +9,7 @@ public class PlayerBulletPool : MonoBehaviour {
 
 	void Start () {
 		bullets = new List<GameObject> ();
+
 		for (int i = 0; i < bulletPoolSize; i++) {
 			GameObject bullet = (GameObject) Instantiate(bulletPrefab);
 			bullet.transform.parent = transform;

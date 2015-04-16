@@ -5,9 +5,8 @@ public class Score : MonoBehaviour {
 
 	int score, playerDeaths;
 
-	bool multiplierActive = false;
-	public int scoreMultiplier;
-	public float multiplierEffectTime;
+	bool multiplierActive;
+	int scoreMultiplier;
 	float multiplierEndTime;
 
 	public Slider multiplierSlider;
@@ -19,14 +18,14 @@ public class Score : MonoBehaviour {
 	Animator anim;
 
 	void Start () {
-		scoreGUI = GetComponent<Text> ();
 		score = 0;
 		playerDeaths = 0;
 
+		multiplierActive = false;
 		scoreMultiplier = 1;
 		multiplierSlider.gameObject.SetActive (false);
-		multiplierSlider.maxValue = multiplierEffectTime;
 
+		scoreGUI = GetComponent<Text> ();
 		anim = GetComponent<Animator> ();
 	}
 
@@ -58,11 +57,13 @@ public class Score : MonoBehaviour {
 		anim.SetTrigger ("SubtractPoints");
 	}
 
-	public void activateScoreMultiplier () {
+	public void activateScoreMultiplier (float multiplierEffectTime) {
 		scoreMultiplier += 1;
 		multiplierGUI.text = "x " + scoreMultiplier.ToString ();
 
-		multiplierSlider.value = multiplierEffectTime; // reset the time slider back to the effect length
+		// reset the time slider back to the effect length
+		multiplierSlider.maxValue = multiplierEffectTime;
+		multiplierSlider.value = multiplierEffectTime;
 		multiplierSlider.gameObject.SetActive (true);
 
 		multiplierEndTime = Time.time + multiplierEffectTime; // calculate the time when the effect will expire

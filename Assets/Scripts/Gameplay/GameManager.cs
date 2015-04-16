@@ -8,9 +8,10 @@ public class GameManager : MonoBehaviour {
 
 	public int numberOfEnemies = 5;
 	public int numberOfBarrels = 5;
-	public int numberOfPowerUps = 2;
+	public int numberOfPowerUps = 3;
+	public int numberOfHazards = 3;
 
-	public GameObject enemies, barrels, pickUps, players;
+	public GameObject enemies, barrels, powerUps, hazards, players;
 
 	public Menu endGameMenu;
 
@@ -46,9 +47,15 @@ public class GameManager : MonoBehaviour {
 			spawnPlayer();
 		}
 
-		if (pickUps.transform.childCount == 0) { // spawn pick-ups
+		if (powerUps.transform.childCount == 0) { // spawn power-ups
 			for (int i = 0; i < numberOfPowerUps; i++) {
 				spawnPowerUp();
+			}
+		}
+
+		if (hazards.transform.childCount == 0) { // spawn hazards
+			for (int i = 0; i < numberOfHazards; i++) {
+				spawnHazard();
 			}
 		}
 
@@ -84,13 +91,21 @@ public class GameManager : MonoBehaviour {
 
 	void spawnPowerUp () {
 		GameObject powerUp = pickUpFactory.createPickUp ("Power Up");
-		powerUp.transform.parent = pickUps.transform;
+		powerUp.transform.parent = powerUps.transform;
 		powerUp.transform.position = randomScreenPosition();
+	}
+
+	void spawnHazard () {
+		GameObject hazard = pickUpFactory.createPickUp ("Hazard");
+		hazard.transform.parent = hazards.transform;
+		hazard.transform.position = randomScreenPosition();
 	}
 
 	Vector3 randomScreenPosition ()	{
 		float randX = Random.Range (0f, 0.9f); // random point on the x-axis
 		float randY = Random.Range (0f, 0.9f); // random point on the y-axis
+
+		// camera is 10 units above the 'ground', so offset spawn position by 10 in the z axis
 		return Camera.main.ViewportToWorldPoint (new Vector3 (randX, randY, 10));
 	}
 
@@ -102,6 +117,7 @@ public class GameManager : MonoBehaviour {
 		int randEdge = Random.Range(0, 4);
 		
 		// Random spawn position on the edge of the screen
+		// camera is 10 units above the 'ground', so offset spawn position by 10 in the z axis
 		switch (randEdge){
 		case 0: // top edge
 			randX = Random.Range(0f, 1f); // random point on the x-axis
