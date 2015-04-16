@@ -5,7 +5,7 @@ public class PlayerBulletPool : MonoBehaviour {
 
 	public GameObject bulletPrefab;
 	List<GameObject> bullets;
-	public int bulletPoolSize = 15;
+	public int bulletPoolSize = 25;
 
 	void Start () {
 		bullets = new List<GameObject> ();
