@@ -56,8 +56,9 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 
-		if (hazards.transform.childCount == 0) { // spawn hazards
-			for (int i = 0; i < numberOfHazards; i++) {
+		int currentNumHazards = hazards.transform.childCount;
+		if (currentNumHazards < numberOfHazards) { // spawn hazards
+			for (int i = 0; i < numberOfHazards - currentNumHazards; i++) {
 				spawnHazard();
 			}
 		}
