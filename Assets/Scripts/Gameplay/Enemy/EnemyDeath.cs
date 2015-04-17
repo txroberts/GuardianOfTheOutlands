@@ -22,7 +22,7 @@ public class EnemyDeath : MonoBehaviour {
 	}
 
 	public void destroyEnemy () {
-		GameObject targetBarrel = GetComponent<EnemyMovement>().getTargetBarrel();
+		GameObject targetBarrel = GetComponent<EnemyMovement>().TargetBarrel;
 		
 		// if the shot enemy was targeting a barrel, free the barrel for other enemies to target
 		if (targetBarrel != null) {

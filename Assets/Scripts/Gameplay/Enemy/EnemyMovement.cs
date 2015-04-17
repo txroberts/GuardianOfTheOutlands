@@ -11,85 +11,120 @@ public class EnemyMovement : MonoBehaviour {
 
 	Barrel[] barrels;
 	GameObject targetBarrel;
-	//Barrel targetBarrelScript;
 
 	Animator damageImageAnimator;
 
-	Vector3 exitPoint, roamTarget;
+	Vector3 movementTarget;
+	float targetRadius = 0.1f;
 
 	void Start () {
 		vehicle = GetComponent<Vehicle> ();
 		slowedDown = false;
 
 		currentState = "No Target";
+
 		barrels = GameObject.Find ("Game Manager").GetComponent<GameManager> ().barrels.GetComponentsInChildren<Barrel> ();
 
 		damageImageAnimator = GameObject.Find ("DamageImage").GetComponent<Animator> ();
-
-		getNewRoamTarget ();
 	}
 
 	void Update () {
-		if (slowedDown && Time.time >= slowedDownEndTime) {
-			vehicle.movementSpeed *= 3; // set the enemy's movement speed back to normal
-			slowedDown = false;
-		}
 
-		if (currentState.Equals ("Move")) {
-			MoveToBarrel ();
+
+		if (currentState.Equals ("Move To Barrel")) {
+			checkTargetBarrel ();
 		} else if (currentState.Equals ("Escape")) {
-			Escape ();
-		} else if (currentState.Equals ("No Target")){
+			checkEscape ();
+		} else if (currentState.Equals ("No Target")) {
 			targetNewBarrel ();
-			
-			if (targetBarrel != null) {
-				currentState = "Move";
+
+			if (targetBarrel != null) { // found a targetable barrel
+				currentState = "Move To Barrel";
+				movementTarget = targetBarrel.transform.position;
 			} else {
-				Roam ();
+				float distanceToTarget = Vector3.Distance (transform.position, movementTarget);
+
+				if (distanceToTarget > targetRadius) {
+					Move (); // move to the target
+				} else {
+					movementTarget = randomScreenPosition ();
+				}
 			}
 		}
 	}
 
-	public void slowDown (float slowedDownTime)	{
-		if (!slowedDown) {
-			slowedDown = true;
-			vehicle.movementSpeed /= 3; // third the enemy's movement speed
+	void Move () {
+		if (slowedDown && Time.time >= slowedDownEndTime) {
+			vehicle.movementSpeed *= 3; // set the enemy's movement speed back to normal
+			slowedDown = false;
 		}
 		
-		slowedDownEndTime = Time.time + slowedDownTime; // reset the timer
-	}
+		Vector3 direction = (movementTarget - transform.position).normalized;
+		float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
+		
+		transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
 
-	void getNewRoamTarget(){
-		float randX = Random.Range (0f, 0.9f); // random point on the x-axis
-		float randY = Random.Range (0f, 0.9f); // random point on the y-axis
-		roamTarget = Camera.main.ViewportToWorldPoint (new Vector3 (randX, randY, 10));
-	}
-
-	void Roam () {
-		// if the enemy is not close to the waypoint
-		if (Vector3.Distance(transform.position, roamTarget) > 0.1f) {
-			Vector3 direction = (roamTarget - transform.position).normalized;
-			float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
+		if (!currentState.Equals ("Escape"))
 			transform.position += direction * vehicle.movementSpeed * Time.deltaTime;
+		else
+			transform.position += direction * (vehicle.movementSpeed / 2) * Time.deltaTime;
+	}
+
+	void checkTargetBarrel () {
+		if (!targetBarrel.GetComponent<Barrel> ().PickedUp) {
+			Move (); // move to the target
 		} else {
-			getNewRoamTarget();
+			// target barrel has been picked up by another enemy
+			currentState = "No Target";
+			movementTarget = randomScreenPosition ();
+		}
+	}
+
+	void checkEscape ()	{
+		float distanceToTarget = Vector3.Distance (transform.position, movementTarget);
+
+		if (distanceToTarget > targetRadius) {
+			Move (); // move to the target
+		} else {
+			// enemy has reached its exit point, switch to roaming mode
+			Transform barrel = transform.FindChild("Barrel(Clone)");
+			
+			if (barrel != null){
+				Destroy (barrel.gameObject);
+				damageImageAnimator.SetTrigger("BarrelStolen");
+				
+				currentState = "No Target";
+				movementTarget = randomScreenPosition ();
+			}
+		}
+	}
+
+	void OnTriggerEnter2D (Collider2D c){
+		string layerName = LayerMask.LayerToName (c.gameObject.layer); // get the layer name
+		
+		if (layerName.Equals ("Barrel")){ // collided with a barrel
+			Barrel barrel = c.GetComponent<Barrel> ();
+			
+			// Only pick up a barrel if not already carrying one and the barrel isn't being carried by another enemy
+			if (transform.FindChild ("Barrel(Clone)") == null && !barrel.PickedUp) {
+				// If the barrel wasn't the enemy's intended barrel, free the intended barrel for other enemies
+				if (targetBarrel != null && !targetBarrel.Equals (gameObject)) {
+					Barrel targetBarrelScript = targetBarrel.GetComponent<Barrel> ();
+					targetBarrelScript.Targeted = false;
+				}
+				
+				// 'pick up' the barrel (make it a child of the enemy that collided with it)
+				c.transform.parent = transform;
+				barrel.Targeted = false;
+				barrel.PickedUp = true;
+				
+				// get a place to escape to and switch to escape mode
+				movementTarget = newExitPoint ();
+				currentState = "Escape";
+			}
 		}
 	}
 	
-	void MoveToBarrel (){
-		// move if the target barrel hasn't been picked up by another enemy
-		if (!targetBarrel.GetComponent<Barrel>().PickedUp) {
-			Vector3 direction = (targetBarrel.transform.position - transform.position).normalized;
-			float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
-			transform.position += direction * vehicle.movementSpeed * Time.deltaTime;
-		} else { // target barrel has been picked up by another enemy, switch to roaming mode
-			getNewRoamTarget ();
-			currentState = "No Target";
-		}
-	}
-
 	void targetNewBarrel(){
 		foreach (Barrel barrel in barrels){
 			// barrel is not already being targeted or been picked up
@@ -104,81 +139,48 @@ public class EnemyMovement : MonoBehaviour {
 		}
 	}
 
-	void Escape () {
-		// if the enemy is not close to its exit point
-		if (Vector3.Distance (transform.position, exitPoint) > 0.1f) {
-			Vector3 direction = (exitPoint - transform.position).normalized;
-			float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
-			transform.position += direction * vehicle.movementSpeed / 2 * Time.deltaTime;
-		} else { // the enemy has reached its exit point, switch to roaming mode
-			Transform barrel = transform.FindChild("Barrel(Clone)");
-			if (barrel != null){
-				Destroy (barrel.gameObject);
-				damageImageAnimator.SetTrigger("BarrelStolen");
-				currentState = "No Target";
-			}
+	public void slowDown (float slowedDownTime)	{
+		if (!slowedDown) {
+			slowedDown = true;
+			vehicle.movementSpeed /= 3; // third the enemy's movement speed
 		}
+		
+		slowedDownEndTime = Time.time + slowedDownTime; // reset the timer
 	}
 
-	void getNewExitPoint(){
-		float randX, randY;
-		
+	Vector3 randomScreenPosition() {
+		float randX = Random.Range (0f, 0.9f); // random point on the x-axis
+		float randY = Random.Range (0f, 0.9f); // random point on the y-axis
+		return Camera.main.ViewportToWorldPoint (new Vector3 (randX, randY, 10));
+	}
+
+	Vector3 newExitPoint(){
 		// choose an edge to exit on (0 = top, 1 = right, 2 = bottom, 3 = left)
 		int randEdge = Random.Range (0, 4);
+
+		float randX, randY;
 		
 		// Random exit position on that edge of the screen
-		// ViewportToWorldPoint camera (0,0) is bottom-left, (1,1) is top-right
+		// ViewportToWorldPoint camera: (0,0) is bottom-left, (1,1) is top-right
 		switch (randEdge){
 		case 0: // top edge
 			randX = Random.Range(0f, 1f); // random point on the x-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(randX,0.99f,10));
-			break;
+			return Camera.main.ViewportToWorldPoint(new Vector3(randX,0.99f,10));
 		case 1: // right edge
 			randY = Random.Range(0f, 1f); // random point on the y-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(0.99f,randY,10));
-			break;
+			return Camera.main.ViewportToWorldPoint(new Vector3(0.99f,randY,10));
 		case 2: // bottom edge
 			randX = Random.Range(0f, 1f); // random point on the x-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(randX,0.01f,10));
-			break;
+			return Camera.main.ViewportToWorldPoint(new Vector3(randX,0.01f,10));
 		case 3: // left edge
 			randY = Random.Range(0f, 1f); // random point on the y-axis
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(0.01f,randY,10));
-			break;
+			return Camera.main.ViewportToWorldPoint(new Vector3(0.01f,randY,10));
 		default: // default bottom-left corner
-			exitPoint = Camera.main.ViewportToWorldPoint(new Vector3(0.01f,0.01f,10));
-			break;
+			return Camera.main.ViewportToWorldPoint(new Vector3(0.01f,0.01f,10));
 		}
 	}
 
-	void OnTriggerEnter2D (Collider2D c){
-		string layerName = LayerMask.LayerToName (c.gameObject.layer); // get the layer name
-
-		if (layerName.Equals ("Barrel")){ // collided with a barrel
-			Barrel barrel = c.GetComponent<Barrel> ();
-
-			// Only pick up a barrel if not already carrying one and the barrel isn't being carried by another enemy
-			if (transform.FindChild ("Barrel(Clone)") == null && !barrel.PickedUp) {
-				// If the barrel wasn't the enemy's intended barrel, free the intended barrel for other enemies
-				if (targetBarrel != null && !targetBarrel.Equals (gameObject)) {
-					Barrel targetBarrelScript = targetBarrel.GetComponent<Barrel> ();
-					targetBarrelScript.Targeted = false;
-				}
-				
-				// 'pick up the barrel' (make it a child of the enemy that collided with it)
-				c.transform.parent = transform;
-				barrel.Targeted = false;
-				barrel.PickedUp = true;
-
-				// get a place to escape to, switch to escape mode
-				getNewExitPoint ();
-				currentState = "Escape";
-			}
-		}
-	}
-
-	public GameObject getTargetBarrel() {
-		return targetBarrel;
+	public GameObject TargetBarrel {
+		get { return targetBarrel; }
 	}
 }
