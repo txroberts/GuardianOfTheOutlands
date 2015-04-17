@@ -3,6 +3,11 @@
 public class EnemyDeath : MonoBehaviour {
 
 	public int pointsValue = 200;
+	GameManager gameManager;
+
+	void Start () {
+		gameManager = GameObject.Find ("Game Manager").GetComponent<GameManager> ();
+	}
 
 	void OnTriggerEnter2D (Collider2D c){
 		string layerName = LayerMask.LayerToName (c.gameObject.layer); // get the layer name
@@ -34,11 +39,11 @@ public class EnemyDeath : MonoBehaviour {
 			barrelScript.PickedUp = false;
 			
 			// give back to the Barrels object
-			barrel.parent = GameObject.Find ("Barrels").transform;
+			barrel.parent = gameManager.barrels.transform;
 		}
 
 		// Add points to the player's score
-		FindObjectOfType<Score>().addPoints(pointsValue);
+		gameManager.score.addPoints(pointsValue);
 		
 		// Explode the enemy
 		GetComponent<Vehicle>().Explosion ();

@@ -21,9 +21,9 @@ public class PowerUp : MonoBehaviour {
 			return;
 		
 		if (powerUpType.Equals ("Score Multiplier")) {
-			FindObjectOfType<Score> ().activateScoreMultiplier (pickUp.effectTime);
+			GameObject.Find ("Game Manager").GetComponent<GameManager> ().score.activateScoreMultiplier (pickUp.effectTime);
 		} else if (powerUpType.Equals ("Invincibility")) {
-			FindObjectOfType<PlayerDeath>().makeInvincible(pickUp.effectTime);
+			c.GetComponent<PlayerDeath>().makeInvincible(pickUp.effectTime);
 		}
 		
 		// destroy the pick-up

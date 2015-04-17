@@ -58,7 +58,7 @@ public class PlayerDeath : MonoBehaviour {
 
 		if (!invincible) {
 			// Deduct points from the player's score
-			FindObjectOfType<Score> ().subtractPoints (deathPenaltyPoints);
+			GameObject.Find ("Game Manager").GetComponent<GameManager> ().score.subtractPoints (deathPenaltyPoints);
 		
 			// Trigger an explosion
 			GetComponent<Vehicle> ().Explosion ();

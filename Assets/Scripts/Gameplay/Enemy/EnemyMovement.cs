@@ -9,8 +9,9 @@ public class EnemyMovement : MonoBehaviour {
 
 	public string currentState;
 
+	Barrel[] barrels;
 	GameObject targetBarrel;
-	Barrel targetBarrelScript;
+	//Barrel targetBarrelScript;
 
 	Animator damageImageAnimator;
 
@@ -21,6 +22,7 @@ public class EnemyMovement : MonoBehaviour {
 		slowedDown = false;
 
 		currentState = "No Target";
+		barrels = GameObject.Find ("Game Manager").GetComponent<GameManager> ().barrels.GetComponentsInChildren<Barrel> ();
 
 		damageImageAnimator = GameObject.Find ("DamageImage").GetComponent<Animator> ();
 
@@ -77,7 +79,7 @@ public class EnemyMovement : MonoBehaviour {
 	
 	void MoveToBarrel (){
 		// move if the target barrel hasn't been picked up by another enemy
-		if (!targetBarrelScript.PickedUp) {
+		if (!targetBarrel.GetComponent<Barrel>().PickedUp) {
 			Vector3 direction = (targetBarrel.transform.position - transform.position).normalized;
 			float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
 			transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
@@ -89,17 +91,12 @@ public class EnemyMovement : MonoBehaviour {
 	}
 
 	void targetNewBarrel(){
-		GameObject[] barrels = GameObject.FindGameObjectsWithTag ("Barrel");
-		
-		foreach (GameObject barrel in barrels){
-			Barrel barrelScript = barrel.GetComponent<Barrel>();
-			
+		foreach (Barrel barrel in barrels){
 			// barrel is not already being targeted or been picked up
-			if (!barrelScript.Targeted && !barrelScript.PickedUp){
-				targetBarrel = barrel;
-				targetBarrelScript = targetBarrel.GetComponent<Barrel>();
+			if (!barrel.Targeted && !barrel.PickedUp){
+				targetBarrel = barrel.gameObject;
 				
-				barrelScript.Targeted = true;
+				barrel.Targeted = true;
 				return;
 			} else{
 				targetBarrel = null; // didn't find a targetable barrel
@@ -115,8 +112,9 @@ public class EnemyMovement : MonoBehaviour {
 			transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
 			transform.position += direction * vehicle.movementSpeed / 2 * Time.deltaTime;
 		} else { // the enemy has reached its exit point, switch to roaming mode
-			if (transform.FindChild("Barrel(Clone)") != null){
-				Destroy (transform.FindChild("Barrel(Clone)").gameObject);
+			Transform barrel = transform.FindChild("Barrel(Clone)");
+			if (barrel != null){
+				Destroy (barrel.gameObject);
 				damageImageAnimator.SetTrigger("BarrelStolen");
 				currentState = "No Target";
 			}
@@ -158,10 +156,10 @@ public class EnemyMovement : MonoBehaviour {
 		string layerName = LayerMask.LayerToName (c.gameObject.layer); // get the layer name
 
 		if (layerName.Equals ("Barrel")){ // collided with a barrel
-			Barrel barrelScript = c.GetComponent<Barrel> ();
+			Barrel barrel = c.GetComponent<Barrel> ();
 
 			// Only pick up a barrel if not already carrying one and the barrel isn't being carried by another enemy
-			if (transform.FindChild ("Barrel(Clone)") == null && !barrelScript.PickedUp) {
+			if (transform.FindChild ("Barrel(Clone)") == null && !barrel.PickedUp) {
 				// If the barrel wasn't the enemy's intended barrel, free the intended barrel for other enemies
 				if (targetBarrel != null && !targetBarrel.Equals (gameObject)) {
 					Barrel targetBarrelScript = targetBarrel.GetComponent<Barrel> ();
@@ -170,8 +168,8 @@ public class EnemyMovement : MonoBehaviour {
 				
 				// 'pick up the barrel' (make it a child of the enemy that collided with it)
 				c.transform.parent = transform;
-				barrelScript.Targeted = false;
-				barrelScript.PickedUp = true;
+				barrel.Targeted = false;
+				barrel.PickedUp = true;
 
 				// get a place to escape to, switch to escape mode
 				getNewExitPoint ();

@@ -8,10 +8,13 @@ public class GameManager : MonoBehaviour {
 
 	public int numberOfEnemies = 5;
 	public int numberOfBarrels = 5;
-	public int numberOfPowerUps = 3;
-	public int numberOfHazards = 3;
+	public int numberOfPowerUps = 5;
+	public int numberOfHazards = 5;
 
 	public GameObject enemies, barrels, powerUps, hazards, players;
+
+	public Score score;
+	public WaveCounter waveCounter;
 
 	public Menu endGameMenu;
 
@@ -32,9 +35,9 @@ public class GameManager : MonoBehaviour {
 			int remainingBarrels = barrels.transform.childCount;
 			if (remainingBarrels > 0){
 				int barrelPointsValue = barrels.GetComponentInChildren<Barrel>().pointsValue;
-				FindObjectOfType<Score>().addPoints(remainingBarrels * barrelPointsValue);
+				score.addPoints(remainingBarrels * barrelPointsValue);
 
-				FindObjectOfType<WaveCounter>().incrementWaveCounter();
+				waveCounter.incrementWaveCounter();
 				spawnWave(); // spawn the next wave of enemies
 			} else {
 				// end game screen
