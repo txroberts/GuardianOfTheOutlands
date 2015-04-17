@@ -4,6 +4,9 @@ public class EnemyMovement : MonoBehaviour {
 
 	Vehicle vehicle;
 
+	bool slowedDown;
+	float slowedDownEndTime;
+
 	public string currentState;
 
 	GameObject targetBarrel;
@@ -15,6 +18,7 @@ public class EnemyMovement : MonoBehaviour {
 
 	void Start () {
 		vehicle = GetComponent<Vehicle> ();
+		slowedDown = false;
 
 		currentState = "No Target";
 
@@ -24,6 +28,11 @@ public class EnemyMovement : MonoBehaviour {
 	}
 
 	void Update () {
+		if (slowedDown && Time.time >= slowedDownEndTime) {
+			vehicle.movementSpeed *= 3; // set the enemy's movement speed back to normal
+			slowedDown = false;
+		}
+
 		if (currentState.Equals ("Move")) {
 			MoveToBarrel ();
 		} else if (currentState.Equals ("Escape")) {
@@ -37,6 +46,15 @@ public class EnemyMovement : MonoBehaviour {
 				Roam ();
 			}
 		}
+	}
+
+	public void slowDown (float slowedDownTime)	{
+		if (!slowedDown) {
+			slowedDown = true;
+			vehicle.movementSpeed /= 3; // third the enemy's movement speed
+		}
+		
+		slowedDownEndTime = Time.time + slowedDownTime; // reset the timer
 	}
 
 	void getNewRoamTarget(){

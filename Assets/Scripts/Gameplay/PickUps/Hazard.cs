@@ -11,15 +11,14 @@ public class Hazard : MonoBehaviour {
 
 	void OnTriggerEnter2D (Collider2D c) {
 		string layerName = LayerMask.LayerToName (c.gameObject.layer); // get the layer name
-		
-		// quit immediately if it wasn't the player that collided with it
-		if (!layerName.Equals ("Player"))
-			return;
 
-		if (!FindObjectOfType<PlayerDeath> ().isInvincible ()) {
-			if (hazardType.Equals ("Tar Patch")) {
+		if (hazardType.Equals ("Tar Patch")) {
+			if (layerName.Equals ("Player") && !c.GetComponent<PlayerDeath> ().isInvincible ()) {
 				// temporarily slow the player down
-				FindObjectOfType<PlayerMovement> ().slowDown (pickUp.effectTime);
+				c.GetComponent<PlayerMovement> ().slowDown (pickUp.effectTime);
+			} else if (layerName.Equals ("Enemy")) {
+				// temporarily slow the enemy down
+				c.GetComponent<EnemyMovement> ().slowDown (pickUp.effectTime);
 			}
 		}
 		
