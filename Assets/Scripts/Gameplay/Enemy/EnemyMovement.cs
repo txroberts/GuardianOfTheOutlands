@@ -15,27 +15,40 @@ public class EnemyMovement : MonoBehaviour {
 	Animator damageImageAnimator;
 
 	Vector3 movementTarget;
-	float targetRadius = 0.1f;
+	float newRoamTime;
+	float currentSpeed;
+	float slowDownRadius, arrivedRadius;
 
 	void Start () {
 		vehicle = GetComponent<Vehicle> ();
 		slowedDown = false;
 
 		currentState = "No Target";
+		movementTarget = newRoamTarget ();
+		currentSpeed = vehicle.movementSpeed;
+		slowDownRadius = 0.8f;
+		arrivedRadius = 0.1f;
 
 		barrels = GameObject.Find ("Game Manager").GetComponent<GameManager> ().barrels.GetComponentsInChildren<Barrel> ();
 
 		damageImageAnimator = GameObject.Find ("DamageImage").GetComponent<Animator> ();
+
+		// point the enemy as its initial target
+		Vector3 directionToTarget = movementTarget - transform.position;
+		Quaternion angleToTarget = Quaternion.FromToRotation (Vector3.up, directionToTarget);
+		angleToTarget.x = angleToTarget.y = 0; // only use the z-axis angle
+		transform.rotation = angleToTarget;
 	}
 
 	void Update () {
-
-
 		if (currentState.Equals ("Move To Barrel")) {
 			checkTargetBarrel ();
 		} else if (currentState.Equals ("Escape")) {
 			checkEscape ();
 		} else if (currentState.Equals ("No Target")) {
+			if (Time.time >= newRoamTime) // get a new roam target at set intervals
+				movementTarget = newRoamTarget ();
+
 			targetNewBarrel ();
 
 			if (targetBarrel != null) { // found a targetable barrel
@@ -44,10 +57,10 @@ public class EnemyMovement : MonoBehaviour {
 			} else {
 				float distanceToTarget = Vector3.Distance (transform.position, movementTarget);
 
-				if (distanceToTarget > targetRadius) {
+				if (distanceToTarget > arrivedRadius) {
 					Move (); // move to the target
 				} else {
-					movementTarget = randomScreenPosition ();
+					movementTarget = newRoamTarget ();
 				}
 			}
 		}
@@ -59,15 +72,27 @@ public class EnemyMovement : MonoBehaviour {
 			slowedDown = false;
 		}
 		
-		Vector3 direction = (movementTarget - transform.position).normalized;
-		float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
-		
-		transform.rotation = Quaternion.Euler (0f, 0f, angle - 90);
+		Vector3 directionToTarget = (movementTarget - transform.position).normalized;
+
+		Quaternion angleToTarget = Quaternion.FromToRotation (Vector3.up, directionToTarget);
+		angleToTarget.x = angleToTarget.y = 0; // only use the z-axis angle
+
+		transform.rotation = Quaternion.Slerp (transform.rotation, angleToTarget, vehicle.rotationSpeed * Time.deltaTime);
+
+		float distanceToTarget = Vector3.Distance (transform.position, movementTarget);;
+
+		if (distanceToTarget > 0.8f) { // outside of the 'nearby' radius
+			// move enemy at full speed
+			currentSpeed = vehicle.movementSpeed;
+		} else if (distanceToTarget <= slowDownRadius && distanceToTarget > arrivedRadius) { // inside the 'nearby' radius but outside the 'arrived' radius
+			// slow the enemy down as it approaches its target to prevent orbiting
+			currentSpeed = vehicle.movementSpeed * (distanceToTarget / slowDownRadius);
+		}
 
 		if (!currentState.Equals ("Escape"))
-			transform.position += direction * vehicle.movementSpeed * Time.deltaTime;
+			transform.Translate (Vector3.up * currentSpeed * Time.deltaTime);
 		else
-			transform.position += direction * (vehicle.movementSpeed / 2) * Time.deltaTime;
+			transform.Translate (Vector3.up * (currentSpeed / 2) * Time.deltaTime);
 	}
 
 	void checkTargetBarrel () {
@@ -76,14 +101,14 @@ public class EnemyMovement : MonoBehaviour {
 		} else {
 			// target barrel has been picked up by another enemy
 			currentState = "No Target";
-			movementTarget = randomScreenPosition ();
+			movementTarget = newRoamTarget ();
 		}
 	}
 
 	void checkEscape ()	{
 		float distanceToTarget = Vector3.Distance (transform.position, movementTarget);
 
-		if (distanceToTarget > targetRadius) {
+		if (distanceToTarget > arrivedRadius) {
 			Move (); // move to the target
 		} else {
 			// enemy has reached its exit point, switch to roaming mode
@@ -94,7 +119,7 @@ public class EnemyMovement : MonoBehaviour {
 				damageImageAnimator.SetTrigger("BarrelStolen");
 				
 				currentState = "No Target";
-				movementTarget = randomScreenPosition ();
+				movementTarget = newRoamTarget ();
 			}
 		}
 	}
@@ -148,7 +173,9 @@ public class EnemyMovement : MonoBehaviour {
 		slowedDownEndTime = Time.time + slowedDownTime; // reset the timer
 	}
 
-	Vector3 randomScreenPosition() {
+	Vector3 newRoamTarget() {
+		newRoamTime = Time.time + 5f; // get a new roam target every 5 seconds whilst roaming
+
 		float randX = Random.Range (0f, 0.9f); // random point on the x-axis
 		float randY = Random.Range (0f, 0.9f); // random point on the y-axis
 		return Camera.main.ViewportToWorldPoint (new Vector3 (randX, randY, 10));
