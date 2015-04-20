@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour {
 		float translation = Input.GetAxis ("Vertical");
 		float rotation = Input.GetAxis ("Horizontal");
 		translation = translation * vehicle.movementSpeed * Time.deltaTime;
-		rotation = rotation * (vehicle.rotationSpeed * -100) * Time.deltaTime;
+		rotation = rotation * -vehicle.rotationSpeed * Time.deltaTime;
 	
 		// Rotate and move the player
 		transform.Rotate (0, 0, rotation);

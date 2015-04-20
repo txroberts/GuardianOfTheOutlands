@@ -6,7 +6,7 @@ public class Vehicle : MonoBehaviour {
 
 	// Vehicle movement/rotation speeds
 	public float movementSpeed = 3f;
-	public float rotationSpeed = 1f;
+	public float rotationSpeed = 100f;
 
 	public GameObject explosion;
 

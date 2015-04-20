@@ -73,13 +73,13 @@ public class EnemyMovement : MonoBehaviour {
 		}
 		
 		Vector3 directionToTarget = (movementTarget - transform.position).normalized;
-
 		Quaternion angleToTarget = Quaternion.FromToRotation (Vector3.up, directionToTarget);
-		angleToTarget.x = angleToTarget.y = 0; // only use the z-axis angle
+		angleToTarget.eulerAngles = new Vector3 (0, 0, angleToTarget.eulerAngles.z); // use only the z-axis rotation
 
-		transform.rotation = Quaternion.Slerp (transform.rotation, angleToTarget, vehicle.rotationSpeed * Time.deltaTime);
+		// rotate the enemy towards the correct angle at its rotation speed
+		transform.rotation = Quaternion.RotateTowards(transform.rotation, angleToTarget, vehicle.rotationSpeed * Time.deltaTime);
 
-		float distanceToTarget = Vector3.Distance (transform.position, movementTarget);;
+		float distanceToTarget = Vector3.Distance (transform.position, movementTarget);
 
 		if (distanceToTarget > 0.8f) { // outside of the 'nearby' radius
 			// move enemy at full speed
