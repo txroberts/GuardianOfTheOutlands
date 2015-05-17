@@ -15,20 +15,32 @@ public class Hazard : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D c) {
 		string layerName = LayerMask.LayerToName (c.gameObject.layer); // get the layer name
 
-		if (hazardType.Equals ("Tar Patch")) {
-			if (layerName.Equals ("Player") && !c.GetComponent<PlayerDeath> ().isInvincible ()) {
+		if (!(layerName.Equals ("Player") || layerName.Equals ("Enemy")))
+			return;
+
+		if (layerName.Equals ("Player") && !c.GetComponent<PlayerDeath> ().isInvincible ()) { // collided with a non-invincible player
+			if (hazardType.Equals ("Tar Patch")) {
 				// temporarily slow the player down
 				c.GetComponent<PlayerMovement> ().slowDown (pickUp.effectTime);
-				numberOfCollisions++;
-			} else if (layerName.Equals ("Enemy")) {
+			} else if (hazardType.Equals("Oil Slick")) {
+				// spin the player to a new (random) direction
+				c.GetComponent<PlayerMovement> ().spin ();
+			}
+
+			numberOfCollisions++;
+		} else  if (layerName.Equals ("Enemy")) { // collided with an enemy
+			if (hazardType.Equals ("Tar Patch")) {
 				// temporarily slow the enemy down
 				c.GetComponent<EnemyMovement> ().slowDown (pickUp.effectTime);
-				numberOfCollisions++;
+			} else if (hazardType.Equals("Oil Slick")) {
+				// spin the enemy to a new (random) direction
+				c.GetComponent<EnemyMovement> ().spin ();
 			}
+
+			numberOfCollisions++;
 		}
 
-		if (numberOfCollisions >= maxCollisions) {
+		if (numberOfCollisions >= maxCollisions)
 			Destroy (gameObject); // destroy the hazard
-		}
 	}
 }

@@ -173,6 +173,11 @@ public class EnemyMovement : MonoBehaviour {
 		slowedDownEndTime = Time.time + slowedDownTime; // reset the timer
 	}
 
+	public void spin () {
+		// give the enemy a new random rotation
+		transform.rotation = Quaternion.Euler (0, 0, Random.Range (0f, 360f));
+	}
+
 	Vector3 newRoamTarget() {
 		newRoamTime = Time.time + 5f; // get a new roam target every 5 seconds whilst roaming
 

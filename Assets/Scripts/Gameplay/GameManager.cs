@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour {
 	public int numberOfEnemies = 5;
 	public int numberOfBarrels = 5;
 	public int numberOfPowerUps = 5;
-	public int numberOfHazards = 5;
+	public int numberOfHazards = 7;
 
 	public GameObject enemies, barrels, powerUps, hazards, players;
 

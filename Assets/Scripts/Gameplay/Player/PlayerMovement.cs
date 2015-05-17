@@ -40,4 +40,9 @@ public class PlayerMovement : MonoBehaviour {
 
 		slowedDownEndTime = Time.time + slowedDownTime; // reset the timer
 	}
+
+	public void spin () {
+		// give the player a new random rotation
+		transform.rotation = Quaternion.Euler (0, 0, Random.Range (0f, 360f));
+	}
 }
