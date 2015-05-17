@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour {
 
 	public GameObject enemies, barrels, powerUps, hazards, players;
 
+	public float enemyMovementSpeedModifier = 0.2f;
+
 	public Score score;
 	public WaveCounter waveCounter;
 
@@ -33,6 +35,7 @@ public class GameManager : MonoBehaviour {
 
 			// Add points to the player's score for each remaining barrel
 			int remainingBarrels = barrels.transform.childCount;
+
 			if (remainingBarrels > 0){
 				int barrelPointsValue = barrels.GetComponentInChildren<Barrel>().pointsValue;
 				score.addPoints(remainingBarrels * barrelPointsValue);
@@ -90,6 +93,10 @@ public class GameManager : MonoBehaviour {
 			enemy.transform.parent = enemies.transform;
 			enemy.transform.position = randomScreenEdgePosition();
 			enemy.transform.rotation = Quaternion.identity;
+
+			// increase enemy movement speed if barrels have already been stolen
+			int barrelsStolen = numberOfBarrels - barrels.transform.childCount;
+			enemy.GetComponent<Vehicle>().movementSpeed += enemyMovementSpeedModifier * barrelsStolen;
 		}
 	}
 
@@ -103,6 +110,13 @@ public class GameManager : MonoBehaviour {
 		GameObject hazard = pickUpFactory.createPickUp ("Hazard");
 		hazard.transform.parent = hazards.transform;
 		hazard.transform.position = randomScreenPosition();
+	}
+
+	public void increaseEnemyMovementSpeed () {
+		for (int i = 0; i < enemies.transform.childCount; i++) {
+			Vehicle enemyVehicle = enemies.transform.GetChild(i).GetComponent<Vehicle>();
+			enemyVehicle.movementSpeed += enemyMovementSpeedModifier;
+		}
 	}
 
 	Vector3 randomScreenPosition ()	{

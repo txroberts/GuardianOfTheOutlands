@@ -4,7 +4,7 @@ public class EnemyMovement : MonoBehaviour {
 
 	Vehicle vehicle;
 
-	bool slowedDown;
+	public bool slowedDown;
 	float slowedDownEndTime;
 
 	public string currentState;
@@ -16,7 +16,7 @@ public class EnemyMovement : MonoBehaviour {
 
 	Vector3 movementTarget;
 	float newRoamTime;
-	float currentSpeed;
+	float currentSpeed, maxSpeed;
 	float slowDownRadius, arrivedRadius;
 
 	void Start () {
@@ -25,7 +25,7 @@ public class EnemyMovement : MonoBehaviour {
 
 		currentState = "No Target";
 		movementTarget = newRoamTarget ();
-		currentSpeed = vehicle.movementSpeed;
+		currentSpeed = maxSpeed = vehicle.movementSpeed;
 		slowDownRadius = 0.8f;
 		arrivedRadius = 0.1f;
 
@@ -33,7 +33,7 @@ public class EnemyMovement : MonoBehaviour {
 
 		damageImageAnimator = GameObject.Find ("DamageImage").GetComponent<Animator> ();
 
-		// point the enemy as its initial target
+		// point the enemy at its initial target
 		Vector3 directionToTarget = movementTarget - transform.position;
 		Quaternion angleToTarget = Quaternion.FromToRotation (Vector3.up, directionToTarget);
 		angleToTarget.x = angleToTarget.y = 0; // only use the z-axis angle
@@ -67,10 +67,14 @@ public class EnemyMovement : MonoBehaviour {
 	}
 
 	void Move () {
+		// if the enemy is still slowed down but the timer has expired
 		if (slowedDown && Time.time >= slowedDownEndTime) {
-			vehicle.movementSpeed *= 3; // set the enemy's movement speed back to normal
+			maxSpeed = vehicle.movementSpeed; // set the enemy's movement speed back to normal
 			slowedDown = false;
 		}
+		// keep the max speed in sync with the vehicle's movement speed when it's not being slowed down
+		else if (!slowedDown && maxSpeed != vehicle.movementSpeed)
+			maxSpeed = vehicle.movementSpeed;
 		
 		Vector3 directionToTarget = (movementTarget - transform.position).normalized;
 		Quaternion angleToTarget = Quaternion.FromToRotation (Vector3.up, directionToTarget);
@@ -83,10 +87,10 @@ public class EnemyMovement : MonoBehaviour {
 
 		if (distanceToTarget > 0.8f) { // outside of the 'nearby' radius
 			// move enemy at full speed
-			currentSpeed = vehicle.movementSpeed;
+			currentSpeed = maxSpeed;
 		} else if (distanceToTarget <= slowDownRadius && distanceToTarget > arrivedRadius) { // inside the 'nearby' radius but outside the 'arrived' radius
 			// slow the enemy down as it approaches its target to prevent orbiting
-			currentSpeed = vehicle.movementSpeed * (distanceToTarget / slowDownRadius);
+			currentSpeed = maxSpeed * (distanceToTarget / slowDownRadius);
 		}
 
 		if (!currentState.Equals ("Escape"))
@@ -117,6 +121,9 @@ public class EnemyMovement : MonoBehaviour {
 			if (barrel != null){
 				Destroy (barrel.gameObject);
 				damageImageAnimator.SetTrigger("BarrelStolen");
+
+				// increase all enemies' movement speeds when a barrel is successfully stolen
+				GameObject.FindObjectOfType<GameManager>().increaseEnemyMovementSpeed ();
 				
 				currentState = "No Target";
 				movementTarget = newRoamTarget ();
@@ -158,7 +165,7 @@ public class EnemyMovement : MonoBehaviour {
 				
 				barrel.Targeted = true;
 				return;
-			} else{
+			} else {
 				targetBarrel = null; // didn't find a targetable barrel
 			}
 		}
@@ -167,7 +174,7 @@ public class EnemyMovement : MonoBehaviour {
 	public void slowDown (float slowedDownTime)	{
 		if (!slowedDown) {
 			slowedDown = true;
-			vehicle.movementSpeed /= 3; // third the enemy's movement speed
+			maxSpeed /= 3; // reduce the enemy's movement speed
 		}
 		
 		slowedDownEndTime = Time.time + slowedDownTime; // reset the timer
