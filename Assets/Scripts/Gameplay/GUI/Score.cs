@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class Score : MonoBehaviour {
 
-	int score, playerDeaths;
+	public int score, playerDeaths;
 
 	bool multiplierActive;
 	int scoreMultiplier;

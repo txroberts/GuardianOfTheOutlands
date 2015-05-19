@@ -2,6 +2,8 @@
 
 public class GameManager : MonoBehaviour {
 
+	bool gameRunning;
+
 	VehicleFactory vehicleFactory;
 	BarrelFactory barrelFactory;
 	PickUpFactory pickUpFactory;
@@ -21,6 +23,8 @@ public class GameManager : MonoBehaviour {
 	public Menu endGameMenu;
 
 	void Start () {
+		gameRunning = true;
+
 		vehicleFactory = GetComponent<VehicleFactory> ();
 		barrelFactory = GetComponent<BarrelFactory> ();
 		pickUpFactory = GetComponent<PickUpFactory> ();
@@ -42,10 +46,15 @@ public class GameManager : MonoBehaviour {
 
 				waveCounter.incrementWaveCounter();
 				spawnWave(); // spawn the next wave of enemies
-			} else {
+			} else if (gameRunning) { // 0 barrels remaining and the game is still running
 				// end game screen
 				FindObjectOfType<Timer>().running = false;
 				FindObjectOfType<MenuManager>().switchToMenu(endGameMenu);
+
+				// update the leaderboard
+				updateHighScores (score.score, score.playerDeaths, System.DateTime.Now);
+
+				gameRunning = false;
 			}
 		}
 
@@ -86,7 +95,7 @@ public class GameManager : MonoBehaviour {
 		//Vector3 testSpawn = player.transform.position + transform.forward * 2.0f;
 		//Instantiate (player, testSpawn, Quaternion.identity);
 	}
-	
+
 	void spawnWave () {
 		for (int i = 0; i < numberOfEnemies; i++) {
 			GameObject enemy = vehicleFactory.createVehicle("enemy");
@@ -117,6 +126,48 @@ public class GameManager : MonoBehaviour {
 			Vehicle enemyVehicle = enemies.transform.GetChild(i).GetComponent<Vehicle>();
 			enemyVehicle.movementSpeed += enemyMovementSpeedModifier;
 		}
+	}
+
+	void updateHighScores (int newScore, int newDeaths, System.DateTime timeStamp) {
+		// timestamp is stored in PlayerPrefs as a string
+		string newTimeStamp = timeStamp.ToBinary ().ToString ();
+
+		int oldScore, oldDeaths;
+		string oldTimeStamp;
+
+		for (int i = 0; i < 10; i++) {
+			if (PlayerPrefs.HasKey ("HS_score_" + i)) {
+				if (newScore > PlayerPrefs.GetInt ("HS_score_" + i)) { // new score is greater than this leaderboard entry
+					// remember the current entry (about to be overwritten) at this position
+					oldScore = PlayerPrefs.GetInt ("HS_score_" + i);
+					oldDeaths = PlayerPrefs.GetInt ("HS_deaths_" + i);
+					oldTimeStamp = PlayerPrefs.GetString("HS_timestamp_" + i);
+					
+					// overwrite with the new score
+					PlayerPrefs.SetInt ("HS_score_" + i, newScore);
+					PlayerPrefs.SetInt ("HS_deaths_" + i, newDeaths);
+					PlayerPrefs.SetString("HS_timestamp_" + i, newTimeStamp);
+					
+					// the replaced entry becomes the 'new' score & timestamp for the next iteration
+					// this has the effect of shifting all of the proceeding leaderboard entries down a position
+					newScore = oldScore;
+					newDeaths = oldDeaths;
+					newTimeStamp = oldTimeStamp;
+				}
+			} else {
+				// no high score at this position, insert a new one
+				PlayerPrefs.SetInt ("HS_score_" + i, newScore);
+				PlayerPrefs.SetInt ("HS_deaths_" + i, newDeaths);
+				PlayerPrefs.SetString("HS_timestamp_" + i, newTimeStamp);
+				
+				// show the proceeding leaderboard entries as blank
+				newScore = 0;
+				newDeaths = 0;
+				newTimeStamp = "--/--/-- --:--:--";
+			}
+		}
+		
+		PlayerPrefs.Save();
 	}
 
 	Vector3 randomScreenPosition ()	{
