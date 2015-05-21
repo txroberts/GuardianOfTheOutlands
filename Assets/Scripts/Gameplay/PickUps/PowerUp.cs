@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 
+[RequireComponent (typeof(PickUp))]
 public class PowerUp : MonoBehaviour {
 
 	public string powerUpType;
 	PickUp pickUp;
+	public AudioClip powerUpSFX;
 
 	void Start () {
 		pickUp = GetComponent<PickUp>();
@@ -25,6 +27,8 @@ public class PowerUp : MonoBehaviour {
 		} else if (powerUpType.Equals ("Invincibility")) {
 			c.GetComponent<PlayerDeath>().makeInvincible(pickUp.effectTime);
 		}
+
+		AudioSource.PlayClipAtPoint (powerUpSFX, transform.position, 1f);
 		
 		// destroy the pick-up
 		Destroy (gameObject);

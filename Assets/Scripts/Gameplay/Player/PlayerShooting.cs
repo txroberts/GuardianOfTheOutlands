@@ -3,6 +3,8 @@
 public class PlayerShooting : MonoBehaviour {
 
 	Animator anim;
+	AudioSource playerAudioSource;
+
 	PlayerBulletPool bulletPool;
 
 	// Vehicle shooting timers
@@ -11,6 +13,8 @@ public class PlayerShooting : MonoBehaviour {
 
 	void Start () {
 		anim = GetComponent<Animator> ();
+		playerAudioSource = GetComponent<AudioSource> ();
+
 		bulletPool = GameObject.Find ("PlayerBulletPool").GetComponent<PlayerBulletPool> ();
 	}
 
@@ -21,6 +25,7 @@ public class PlayerShooting : MonoBehaviour {
 				if (bulletPool.fireBullet(transform)) { // true if a bullet was fired
 					nextShot = Time.time + shootDelay; // the next time when a bullet can be fired
 					anim.SetBool ("IsShooting", true); // trigger the shooting animation
+					playerAudioSource.Play ();
 				}
 			}
 		} else {
