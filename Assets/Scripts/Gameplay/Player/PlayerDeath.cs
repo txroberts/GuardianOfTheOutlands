@@ -74,6 +74,6 @@ public class PlayerDeath : MonoBehaviour {
 	}
 
 	public bool isInvincible () {
-			return invincible;
+		return invincible;
 	}
 }
