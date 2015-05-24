@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class WaveCounter : MonoBehaviour {
 
-	int waveCount;
+	public int waveCount;
 	Text counterGUI;
 	public Text endGameCounter;
 

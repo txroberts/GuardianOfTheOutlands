@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
@@ -51,8 +52,10 @@ public class GameManager : MonoBehaviour {
 				FindObjectOfType<Timer>().running = false;
 				FindObjectOfType<MenuManager>().switchToMenu(endGameMenu);
 
+				string gameTime = GameObject.Find("Timer").GetComponent<Text>().text;
+
 				// update the leaderboard
-				updateHighScores (score.score, score.playerDeaths, System.DateTime.Now);
+				updateHighScores (score.score, waveCounter.waveCount, gameTime);
 
 				gameRunning = false;
 			}
@@ -128,46 +131,53 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	void updateHighScores (int newScore, int newDeaths, System.DateTime timeStamp) {
+	void updateHighScores (int newScore, int newWaves, string newGameTime) {
 		// timestamp is stored in PlayerPrefs as a string
-		string newTimeStamp = timeStamp.ToBinary ().ToString ();
-
-		int oldScore, oldDeaths;
+		string newTimeStamp = System.DateTime.Now.ToBinary ().ToString ();
+		// System.DateTime recovered = System.DateTime.FromBinary (System.Convert.ToInt64 (storedTimeStamp));
 		string oldTimeStamp;
-
+		
+		int oldScore, oldWaves;
+		string oldGameTime;
+		
 		for (int i = 0; i < 10; i++) {
 			if (PlayerPrefs.HasKey ("HS_score_" + i)) {
 				if (newScore > PlayerPrefs.GetInt ("HS_score_" + i)) { // new score is greater than this leaderboard entry
 					// remember the current entry (about to be overwritten) at this position
 					oldScore = PlayerPrefs.GetInt ("HS_score_" + i);
-					oldDeaths = PlayerPrefs.GetInt ("HS_deaths_" + i);
-					oldTimeStamp = PlayerPrefs.GetString("HS_timestamp_" + i);
+					oldWaves = PlayerPrefs.GetInt ("HS_waves_" + i);
+					oldGameTime = PlayerPrefs.GetString ("HS_gameTime_" + i);
+					oldTimeStamp = PlayerPrefs.GetString ("HS_timestamp_" + i);
 					
 					// overwrite with the new score
 					PlayerPrefs.SetInt ("HS_score_" + i, newScore);
-					PlayerPrefs.SetInt ("HS_deaths_" + i, newDeaths);
-					PlayerPrefs.SetString("HS_timestamp_" + i, newTimeStamp);
+					PlayerPrefs.SetInt ("HS_waves_" + i, newWaves);
+					PlayerPrefs.SetString ("HS_gameTime_" + i, newGameTime);
+					PlayerPrefs.SetString ("HS_timestamp_" + i, newTimeStamp);
 					
-					// the replaced entry becomes the 'new' score & timestamp for the next iteration
+					// the replaced entry becomes the 'new' entry for the next loop iteration
 					// this has the effect of shifting all of the proceeding leaderboard entries down a position
 					newScore = oldScore;
-					newDeaths = oldDeaths;
+					newWaves = oldWaves;
+					newGameTime = oldGameTime;
 					newTimeStamp = oldTimeStamp;
 				}
 			} else {
 				// no high score at this position, insert a new one
 				PlayerPrefs.SetInt ("HS_score_" + i, newScore);
-				PlayerPrefs.SetInt ("HS_deaths_" + i, newDeaths);
-				PlayerPrefs.SetString("HS_timestamp_" + i, newTimeStamp);
+				PlayerPrefs.SetInt ("HS_waves_" + i, newWaves);
+				PlayerPrefs.SetString ("HS_gameTime_" + i, newGameTime);
+				PlayerPrefs.SetString ("HS_timestamp_" + i, newTimeStamp);
 				
 				// show the proceeding leaderboard entries as blank
 				newScore = 0;
-				newDeaths = 0;
+				newWaves = 0;
+				newGameTime = "--:--:--";
 				newTimeStamp = "--/--/-- --:--:--";
 			}
 		}
 		
-		PlayerPrefs.Save();
+		PlayerPrefs.Save ();
 	}
 
 	Vector3 randomScreenPosition ()	{
