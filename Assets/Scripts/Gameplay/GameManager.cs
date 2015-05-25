@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
-	bool gameRunning;
+	public bool gameRunning;
 
 	VehicleFactory vehicleFactory;
 	BarrelFactory barrelFactory;
@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour {
 	public WaveCounter waveCounter;
 
 	public Menu endGameMenu;
+	public GameObject pauseMenu;
 
 	void Start () {
 		gameRunning = true;
@@ -30,17 +31,25 @@ public class GameManager : MonoBehaviour {
 		barrelFactory = GetComponent<BarrelFactory> ();
 		pickUpFactory = GetComponent<PickUpFactory> ();
 
+		pauseMenu.SetActive (false);
+		RectTransform pauseMenuRectTransform = pauseMenu.GetComponent<RectTransform> ();
+		pauseMenuRectTransform.offsetMax = pauseMenuRectTransform.offsetMin = new Vector2 (0, 0);
+
 		spawnBarrels ();
 		spawnPlayer();
 		spawnWave(); // spawn first wave of enemies
 	}
 
 	void Update () {
-		if (Input.GetKeyDown ("escape")) {
-			if (Time.timeScale == 1f)
-				Time.timeScale = 0f;
-			else
-				Time.timeScale = 1f;
+		if (Input.GetKeyDown (KeyCode.Escape) && gameRunning) {
+			if (Time.timeScale == 1f) {
+				pauseMenu.SetActive(true);
+				setTimeScale(0f);
+			}
+			else {
+				setTimeScale(1f);
+				pauseMenu.SetActive(false);
+			}
 		}
 
 		if (enemies.transform.childCount == 0 && numberOfEnemies > 0) { // all enemies in a wave have been destroyed
@@ -136,6 +145,10 @@ public class GameManager : MonoBehaviour {
 			Vehicle enemyVehicle = enemies.transform.GetChild(i).GetComponent<Vehicle>();
 			enemyVehicle.movementSpeed += enemyMovementSpeedModifier;
 		}
+	}
+	
+	public void setTimeScale (float newTimeScale) {
+		Time.timeScale = newTimeScale;
 	}
 
 	void updateHighScores (int newScore, int newWaves, string newGameTime) {

@@ -20,10 +20,14 @@ public class MenuManager : MonoBehaviour {
 	}
 
 	public void switchToScene (string newScene) {
-		StartCoroutine(loadScene(newScene));
+		Application.LoadLevel (newScene);
 	}
 
-	IEnumerator loadScene (string newScene) {
+	public void switchToSceneFade (string newScene) {
+		StartCoroutine(fadeScene(newScene));
+	}
+
+	IEnumerator fadeScene (string newScene) {
 		yield return new WaitForSeconds (3f);
 		Application.LoadLevel (newScene);
 	}
