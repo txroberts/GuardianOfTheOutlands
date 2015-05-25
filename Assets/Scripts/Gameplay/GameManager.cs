@@ -36,6 +36,13 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Update () {
+		if (Input.GetKeyDown ("escape")) {
+			if (Time.timeScale == 1f)
+				Time.timeScale = 0f;
+			else
+				Time.timeScale = 1f;
+		}
+
 		if (enemies.transform.childCount == 0 && numberOfEnemies > 0) { // all enemies in a wave have been destroyed
 
 			// Add points to the player's score for each remaining barrel
