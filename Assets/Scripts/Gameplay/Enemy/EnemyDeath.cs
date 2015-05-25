@@ -3,6 +3,7 @@
 public class EnemyDeath : MonoBehaviour {
 
 	public int pointsValue = 200;
+	public string type;
 	GameManager gameManager;
 
 	void Start () {
@@ -14,7 +15,11 @@ public class EnemyDeath : MonoBehaviour {
 
 		// hit by the player's bullet
 		if (layerName.Equals ("Bullet (Player)")) {
-			destroyEnemy ();
+			if (type.Equals ("Heavy")) {
+				type = "Damaged Heavy";
+			} else {
+				destroyEnemy ();
+			}
 
 			// Delete the player's bullet
 			c.gameObject.SetActive(false);
