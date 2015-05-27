@@ -52,28 +52,36 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 
+		//int remainingBarrels = barrels.transform.childCount;
+		int remainingBarrels = GameObject.FindObjectsOfType<Barrel>().Length;
+
+		if (gameRunning && remainingBarrels == 0) {
+			// end game screen
+			FindObjectOfType<Timer>().running = false;
+			FindObjectOfType<MenuManager>().switchToMenu(endGameMenu);
+			
+			string gameTime = GameObject.Find("Timer").GetComponent<Text>().text;
+			
+			// update the leaderboard
+			updateHighScores (score.score, waveCounter.waveCount, gameTime);
+			
+			gameRunning = false;
+
+			if (enemies.transform.childCount > 0) {
+				for (int i = 0; i < enemies.transform.childCount; i++) {
+					Destroy(enemies.transform.GetChild(i).gameObject);
+				}
+			}
+		}
+
 		if (enemies.transform.childCount == 0 && numberOfEnemies > 0) { // all enemies in a wave have been destroyed
-
 			// Add points to the player's score for each remaining barrel
-			int remainingBarrels = barrels.transform.childCount;
-
 			if (remainingBarrels > 0){
 				int barrelPointsValue = barrels.GetComponentInChildren<Barrel>().pointsValue;
 				score.addPoints(remainingBarrels * barrelPointsValue);
 
 				waveCounter.incrementWaveCounter();
 				spawnWave(); // spawn the next wave of enemies
-			} else if (gameRunning) { // 0 barrels remaining and the game is still running
-				// end game screen
-				FindObjectOfType<Timer>().running = false;
-				FindObjectOfType<MenuManager>().switchToMenu(endGameMenu);
-
-				string gameTime = GameObject.Find("Timer").GetComponent<Text>().text;
-
-				// update the leaderboard
-				updateHighScores (score.score, waveCounter.waveCount, gameTime);
-
-				gameRunning = false;
 			}
 		}
 
