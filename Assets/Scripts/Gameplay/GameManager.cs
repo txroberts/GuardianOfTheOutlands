@@ -52,7 +52,6 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 
-		//int remainingBarrels = barrels.transform.childCount;
 		int remainingBarrels = GameObject.FindObjectsOfType<Barrel>().Length;
 
 		if (gameRunning && remainingBarrels == 0) {
@@ -117,10 +116,6 @@ public class GameManager : MonoBehaviour {
 
 		player.transform.position = randomScreenPosition ();
 		player.transform.rotation = Quaternion.Euler (0, 0, Random.Range (0f, 360f));
-		
-		// ** Test for spawning another co-op player **
-		//Vector3 testSpawn = player.transform.position + transform.forward * 2.0f;
-		//Instantiate (player, testSpawn, Quaternion.identity);
 	}
 
 	void spawnWave () {
