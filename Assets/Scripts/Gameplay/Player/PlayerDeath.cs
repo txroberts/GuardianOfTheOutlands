@@ -12,7 +12,6 @@ public class PlayerDeath : MonoBehaviour {
 	void Start () {
 		invincible = false;
 		invincibilitySlider = GameObject.Find ("InvincibilityTimer").GetComponent<Slider> ();
-		invincibilitySlider.gameObject.SetActive (false);
 	}
 
 	void Update () {
@@ -25,7 +24,7 @@ public class PlayerDeath : MonoBehaviour {
 				invincibilitySlider.transform.position = playerPos + new Vector3(0f, 25f, 0f);
 			} else {
 				invincible = false;
-				invincibilitySlider.gameObject.SetActive (false);
+				invincibilitySlider.transform.position = new Vector3(-500f, 230f, 0f); // hide the slider off-screen
 			}
 		}
 	}
@@ -33,7 +32,6 @@ public class PlayerDeath : MonoBehaviour {
 	public void makeInvincible (float invincibilityTime) {
 		if (!invincible) {
 			invincible = true;
-			invincibilitySlider.gameObject.SetActive (true);
 
 			// reset the time slider back to the effect length
 			invincibilitySlider.maxValue = invincibilityTime;
@@ -65,9 +63,6 @@ public class PlayerDeath : MonoBehaviour {
 		
 			// Delete the player
 			Destroy (gameObject);
-
-			// make active so the next playerDeath script can pick it up
-			invincibilitySlider.gameObject.SetActive (true);
 		} else {
 			c.gameObject.GetComponent<EnemyDeath>().destroyEnemy();
 		}

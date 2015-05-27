@@ -32,3 +32,5 @@ Audio
 "pause" (http://www.freesound.org/people/crisstanza/sounds/167127/) by crisstanza (http://www.freesound.org/people/crisstanza/) is licensed under CC0 (http://creativecommons.org/publicdomain/zero/1.0/)
 
 "Explosion" (http://www.freesound.org/people/qubodup/sounds/182429/) by qubodup (http://www.freesound.org/people/qubodup/) is licensed under CC0 (http://creativecommons.org/publicdomain/zero/1.0/)
+
+"Layered Gunshot 9" (http://www.freesound.org/people/Xenonn/sounds/128301/) by Xenonn (http://www.freesound.org/people/Xenonn/) is licensed under CC0 (http://creativecommons.org/publicdomain/zero/1.0/)
